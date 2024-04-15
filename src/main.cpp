@@ -17,7 +17,7 @@ TFT_eSPI tft = TFT_eSPI();
 #include "nen4.h"
 #include "nen5.h"
 #include "reset.h"
-const int button = 34;
+// const int button = 34;
 int buttonstate = HIGH;
 const int button1 = 35;
 int button1state = HIGH;
