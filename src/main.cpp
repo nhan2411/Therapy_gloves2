@@ -10,13 +10,14 @@ TFT_eSPI tft = TFT_eSPI();
 
 // Include the sketch header file that contains the image stored as an array of bytes
 // More than one image array could be stored in each header file.
-#include "anh.h"
-#include "nen1.h"
-#include "nen2.h"
-#include "nen3.h"
-#include "nen4.h"
-#include "nen5.h"
+#include "anhnen.h"
+#include "nen_main.h"
+#include "nentgtap.h"
+#include "nendangtap.h"
+#include "nentayphai.h"
+#include "nentaytrai.h"
 #include "reset.h"
+#include "nenchucmung.h"
  const int button = 34;
 int buttonstate = HIGH;
 const int button1 = 35;
@@ -52,7 +53,6 @@ typedef enum {
 } TimeState;
 
 struct TG {
-    int num;
     TimeState state;
 };
 
@@ -177,15 +177,15 @@ void IRAM_ATTR buttonCallback(){
     if(millis()-last>=200){
       if (buttonpress == 0){
         buttonpress = 1;
-        tft.fillCircle(182, 185, 20, TFT_ORANGE);
-        tft.fillRoundRect(175, 176, 5, 20, 0, TFT_WHITE); 
-        tft.fillRoundRect(185, 176, 5, 20, 0, TFT_WHITE); 
+        tft.fillCircle(197, 185, 20, TFT_ORANGE);
+        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
+        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
       }
       else {
         buttonpress = 0;
-        int downArrowX1 = 191;
+        int downArrowX1 = 206;
         int downArrowY1 = 185;
-        tft.fillCircle(182, 185, 20, TFT_ORANGE);
+        tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
       }
       last = millis();
@@ -196,11 +196,11 @@ void IRAM_ATTR buttonCallback(){
 void manhinh()
 {
   flag = false;
-  drawArrayJpeg(anh, sizeof(anh), 0, 0); // Draw a jpeg image stored in memory at x,y
+  drawArrayJpeg(anhnen, sizeof(anhnen), 0, 0); // Draw a jpeg image stored in memory at x,y
   
 }
 
-void manhinh2(int chooseScreen2)
+void manhinh_main(int chooseScreen2)
 {
 
   if(!flag){
@@ -212,31 +212,31 @@ void manhinh2(int chooseScreen2)
     flag = true;
   }
 
-  drawArrayJpeg(nen1, sizeof(nen1), 0, 0); // Draw a jpeg image stored in memory at x,y
+  drawArrayJpeg(nen_main, sizeof(nen_main), 0, 0); // Draw a jpeg image stored in memory at x,y
   int downArrowX = 30;
   int downArrowY = 215;
-  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 25, downArrowY - 15, downArrowX + 25, downArrowY + 15, 0x053b50);
+  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
 
   if(chooseScreen2 == 1) 
-    tft.fillRoundRect(40, 95, 120, 70, 10, 0x053b50);
+    tft.fillRoundRect(16, 95, 144, 70, 10, 0x053b50);
   else
-    tft.fillRoundRect(50, 105, 100, 50, 10, 0x053b50); 
+    tft.fillRoundRect(26, 105, 124, 50, 10, 0x053b50); 
 
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("TAY PHAI", 100, 130);
+  tft.drawString("RIGHT HAND", 88, 130);
 
 
    if(chooseScreen2 == 2) 
-   tft.fillRoundRect(160, 95, 120, 70, 10, 0x053b50);
+    tft.fillRoundRect(160, 95, 142, 70, 10, 0x053b50);
   else
-     tft.fillRoundRect(170, 105, 100, 50, 10, 0x053b50);
+     tft.fillRoundRect(170, 105, 122, 50, 10, 0x053b50);
 
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("TAY TRAI", 220, 130);
+  tft.drawString("LEFT HAND", 231, 130);
 
 
  if(chooseScreen2 == 3) 
@@ -246,10 +246,10 @@ void manhinh2(int chooseScreen2)
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("THOI GIAN", 160, 200);
+  tft.drawString("TIME", 160, 200);
 }
 
-void manhinh3(int hand){
+void manhinh_hand(int hand){
     printf("\nLeft hand:\n");
     for (int i = 0; i < 5; ++i) {
         if (person.left_hand.fingers[i].state == ACTIVE)
@@ -506,7 +506,7 @@ void manhinh3(int hand){
 
 }
 
-void manhinh5() {
+void manhinh_time() {
   if(!co){
     for (int i = 0; i < 2; ++i) {
       thoigian.phutgiay[i].state = OFF;
@@ -531,7 +531,7 @@ void manhinh5() {
   drawArrayJpeg(nentgtap, sizeof(nentgtap), 0, 0); // Draw a jpeg image stored in memory at x,y
   int downArrowX = 30;
   int downArrowY = 215;
-  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 25, downArrowY - 15, downArrowX + 25, downArrowY + 15, 0x053b50);
+  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
 
   if (thoigian.phutgiay[0].state == ON && chooseScreen3_2 == 1)   
     tft.fillRoundRect(80, 45, 70, 45, 7.5, TFT_ORANGE); // CHON O LAI
@@ -545,7 +545,7 @@ void manhinh5() {
   tft.setTextColor(0x053b50);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
-  tft.drawString("(phut)", 115, 102.5); 
+  tft.drawString("(mins)", 115, 102.5); 
 
   //   tft.fillRoundRect(80, 45, 70, 45, 7.5, 0x053b50); 
     tft.setCursor(104,60);
@@ -572,7 +572,7 @@ void manhinh5() {
   tft.setTextColor(0x053b50);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
-  tft.drawString("(giay)", 205, 102.5); 
+  tft.drawString("(secs)", 205, 102.5); 
 
     tft.setCursor(194,60);
     tft.setTextColor(TFT_WHITE);
@@ -582,9 +582,9 @@ void manhinh5() {
     tft.print(s%10); 
 
   if (chooseScreen3_2 == 3)
-    tft.drawBitmap(250,50,reset,40,30,TFT_RED );//CHON ROI
+    tft.drawBitmap(250,55,reset,30,23,TFT_RED );//CHON ROI
   else
-    tft.drawBitmap(250,50,reset,40,30,TFT_BLACK );// CHUA CHON
+    tft.drawBitmap(250,55,reset,30,23,TFT_BLACK );// CHUA CHON
 
   if(thoigian.phutgiay2[0].state == ON && chooseScreen3_2 == 4)
     tft.fillRoundRect(15, 125, 70, 55, 7.5, TFT_ORANGE); //CHON O LAI
@@ -599,7 +599,7 @@ void manhinh5() {
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("1", 50, 143.5); 
-  tft.drawString("phut", 50, 161.5); 
+  tft.drawString("mins", 50, 161.5); 
 
   if(thoigian.phutgiay2[1].state == ON && chooseScreen3_2 == 5)
     tft.fillRoundRect(90, 125, 70, 55, 7.5, TFT_ORANGE); //CHON O LAI
@@ -614,7 +614,7 @@ void manhinh5() {
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("5", 125, 143.5); 
-  tft.drawString("phut", 125, 161.5); 
+  tft.drawString("mins", 125, 161.5); 
 
   if(thoigian.phutgiay2[2].state == ON && chooseScreen3_2 == 6)
     tft.fillRoundRect(165, 125, 70, 55, 7.5, TFT_ORANGE); //CHON O LAI
@@ -629,7 +629,7 @@ void manhinh5() {
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("15", 200, 143.5); 
-  tft.drawString("phut", 200, 161.5); 
+  tft.drawString("mins", 200, 161.5); 
 
   if(thoigian.phutgiay2[3].state == ON && chooseScreen3_2 == 7)
     tft.fillRoundRect(240, 125, 70, 55, 7.5, TFT_ORANGE); //CHON O LAI
@@ -644,28 +644,16 @@ void manhinh5() {
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("30", 275, 143.5); 
-  tft.drawString("phut", 275, 161.5); 
+  tft.drawString("mins", 275, 161.5); 
 
   int downArrowX1 = 171;
   int downArrowY1 = 215;
   tft.fillCircle(162, 215, 17, 0x053b50);
   tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
 
-  // for(int m=00; m<=60; m++){
-  //   delay(1000);
-  //   tft.fillRoundRect(80, 45, 70, 45, 7.5, 0x053b50); 
-  //   tft.setCursor(105,60);
-  //   tft.setTextColor(TFT_WHITE);
-  //   tft.setTextSize(2);
-  //   tft.setTextDatum(MC_DATUM); 
-  //   tft.print(m/10); 
-  //   tft.print(m%10); 
-  // }
-        
-
 }
 
-void manhinh6(){
+void manhinh_timing(){
   drawArrayJpeg(nendangtap, sizeof(nendangtap), 0, 0); // Draw a jpeg image stored in memory at x,y
   tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
   tft.setTextColor(0x053b50);
@@ -678,60 +666,28 @@ void manhinh6(){
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("(secs)", 205, 107.5); 
-  if(buttonpress == 1){
-    int downArrowX1 = 191;
+
+    int downArrowX1 = 206;
     int downArrowY1 = 185;
-    tft.fillCircle(182, 185, 20, TFT_ORANGE);
+    tft.fillCircle(197, 185, 20, TFT_ORANGE);
     tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
-  }
+
 
   tft.setTextColor(0x053b50);
   tft.setTextSize(4);
   tft.setTextDatum(MC_DATUM);  
   tft.drawString(":", 162, 79); 
 
-  int downArrowX = 80;
+  int downArrowX = 95;
   int downArrowY = 185;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 25, downArrowY - 15, downArrowX + 25, downArrowY + 15, 0x053b50);
 
+}
 
-  // for(int i=m; i>=0; i--){
-  //   delay(1000);
-  //   tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
-  //   tft.setCursor(107,70);
-  //   tft.setTextColor(TFT_WHITE);
-  //   tft.setTextSize(2);
-  //   tft.setTextDatum(MC_DATUM); 
-  //   tft.print(m/10); 
-  //   tft.print(m%10); 
-  // }
-       
-    
-      // if (buttonstate == 0 ) 
-      // {
-      //   printf("qwertyuio");
-      //   m_temp = e;
-      //   s_temp = i;
-      //   tft.fillRoundRect(170, 60, 60, 35, 7.5, 0x053b50); 
-      //   tft.setCursor(185,70);
-      //   tft.setTextColor(TFT_WHITE);
-      //   tft.setTextSize(2);
-      //   tft.setTextDatum(MC_DATUM); 
-      //   tft.print(s_temp/10); 
-      //   tft.print(s_temp%10); 
+void manhinh_congra(){
+  drawArrayJpeg(nenchucmung, sizeof(nenchucmung), 0, 0); // Draw a jpeg image stored in memory at x,y
+}
 
-      //   tft.fillRoundRect(95, 60, 60, 35, 7.5, 0x053b50); 
-      //   tft.setCursor(107,70);
-      //   tft.setTextColor(TFT_WHITE);
-      //   tft.setTextSize(2);
-      //   tft.setTextDatum(MC_DATUM); 
-      //   tft.print(m_temp/10); 
-      //   tft.print(m_temp%10); 
-
-      //   break;
-      // }
-
-    }
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -764,7 +720,7 @@ void loop (){
       chooseScreen2=1;
       currentScreen++;
       delay(100);
-      manhinh2(chooseScreen2);
+      manhinh_main(chooseScreen2);
     
     button_pressed = true;
 
@@ -782,7 +738,7 @@ void loop (){
       chooseScreen2 = 1;
     Serial.println(chooseScreen2);
     delay(100);   
-    manhinh2(chooseScreen2);
+    manhinh_main(chooseScreen2);
   }
   // qua trai
   if(currentScreen == 2 && button1state ==0){
@@ -791,14 +747,14 @@ void loop (){
       chooseScreen2 = 3;
     Serial.println(chooseScreen2);
      delay(100); 
-    manhinh2(chooseScreen2);
+    manhinh_main(chooseScreen2);
   }
-  // vao man hinh tay phai, tay trai (manhinh3)
+  // vao man hinh tay phai, tay trai (manhinh_hand)
   if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && (chooseScreen2 == 1 || chooseScreen2 == 2)){
       currentScreen++;
       chooseScreen3_1=1;
       delay(100);
-      manhinh3(chooseScreen2);
+      manhinh_hand(chooseScreen2);
       flag1 = 2;
       flag2 = 1;
     button_pressed = true;
@@ -806,11 +762,11 @@ void loop (){
   if(buttonstate == 1){
     button_pressed = false;
   }
-  // vao man hinh tg tap(manhinh5)
+  // vao man hinh tg tap(manhinh_time)
   if(currentScreen == 2 && chooseScreen2 == 3 && buttonstate == 0 && button_pressed == false){
     currentScreen++;
     delay(100);
-    manhinh5();
+    manhinh_time();
     flag2 = 2;
     flag1 = 1;
     button_pressed = true;
@@ -827,7 +783,7 @@ void loop (){
     }
     Serial.println(chooseScreen3_1); 
      delay(100); 
-    manhinh3(chooseScreen2);
+    manhinh_hand(chooseScreen2);
   }
 
   if(currentScreen == 3 && button1state ==0 && flag1 == 2){//TRAI
@@ -836,7 +792,7 @@ void loop (){
       chooseScreen3_1 = 6;
     Serial.println(chooseScreen3_1);
      delay(100); 
-    manhinh3(chooseScreen2);
+    manhinh_hand(chooseScreen2);
   }
 
   if(currentScreen == 3 && chooseScreen3_1 >= 1 && chooseScreen3_1 <=6 && buttonstate == 0 && button_pressed == false && flag1 == 2){
@@ -896,20 +852,20 @@ void loop (){
         button_pressed = true;
       }
       delay(100);
-       manhinh3(chooseScreen2);
+       manhinh_hand(chooseScreen2);
        button_pressed = true;
   }
   if(buttonstate == 1){
     button_pressed = false;
   }
-// manhinh5
+// manhinh_time
 if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     chooseScreen3_2++;
     if(chooseScreen3_2 == 8 ){
       chooseScreen3_2 = 1;
     }
      delay(100); 
-    manhinh5();
+    manhinh_time();
   }
 
   if(currentScreen == 3 && button1state ==0 && flag2 == 2 && a == 0){//TRAI
@@ -917,7 +873,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     if(chooseScreen3_2 == 0)
       chooseScreen3_2 = 7;
      delay(100); 
-    manhinh5();
+    manhinh_time();
   }
 
   if(currentScreen == 3 && chooseScreen3_2 >= 1 && chooseScreen3_2 <=7 && buttonstate == 0 && button_pressed == false && flag2 == 2){
@@ -1006,7 +962,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       }
     }
     delay(100);
-    manhinh5();
+    manhinh_time();
     button_pressed = true;
   }
   if(buttonstate == 1){
@@ -1016,10 +972,10 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
   if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 1){//phai tăng
     if(chooseScreen3_2 == 1){
       m++;
-      if(m > 60 ){
-        m = 00;
+      if(m == 60 )
         s = 00;
-      }
+      if(m>60)
+        m=00;
     }
     if(chooseScreen3_2 == 2){
       s++;
@@ -1033,7 +989,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       }
     }
     delay(100); 
-    manhinh5();
+    manhinh_time();
   }
 
   if(currentScreen == 3 && button1state ==0 && flag2 == 2 && a == 1){//TRAI giảm
@@ -1052,7 +1008,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
         m = 00;
     }
      delay(100); 
-    manhinh5();
+    manhinh_time();
   }
 
   //back
@@ -1080,13 +1036,13 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       chooseScreen2 = 1;
       chooseScreen3_1 = 1;
       chooseScreen3_2 = 1;
-      manhinh2(chooseScreen2);
+      manhinh_main(chooseScreen2);
       currentScreen--;
   }
 
   if(button3state == 0 && currentScreen == 4){
       delay(100);
-      manhinh5();
+      manhinh_time();
       currentScreen--;
   }
   //next
@@ -1095,17 +1051,17 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       chooseScreen2 = 1;
       chooseScreen3_1 = 1;
       chooseScreen3_2 = 1;
-      manhinh2(chooseScreen2);
+      manhinh_main(chooseScreen2);
       currentScreen--;
   }
 
-  if(button4state == 0 && currentScreen == 3 && flag2 == 2){
+  if(button4state == 0 && currentScreen == 3 && flag2 == 2 && (m>00 || s>00)){
     delay(50);
-    manhinh6();
+    manhinh_timing();
     currentScreen++;
     buttonpress = 0;
   }
-
+// manhinh_timing
   if(buttonpress == 0 && currentScreen == 4){
     if(millis()-last>=800){
       tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
@@ -1149,14 +1105,21 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       tft.setCursor(194,15);
       tft.printf("...");
       delay(300);
-        if(m <0)
+        if(m <0 || s <=0)
       {
         m = 00;
         s = 00;
-        manhinh5();
-        currentScreen--;
+        //delay(100);
+        manhinh_congra();
+        currentScreen++;
       }
       }
+  //manhinh_congra
+  if(button3state == 0 && currentScreen == 5){
+      delay(100);
+      manhinh_time();
+      currentScreen = currentScreen - 2;
+  }
 }
 
 
