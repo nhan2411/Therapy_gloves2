@@ -1085,12 +1085,12 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
         s=59;
         m--;
       }
-      if(m <0)
-      {
-        m = 00;
-        s = 00;
+      // if(m <0)
+      // {
+      //   m = 00;
+      //   s = 00;
 
-      }
+      // }
       last = millis();
     }
       tft.fillRoundRect(193, 20, 40, 10, 2.5, TFT_WHITE); 
@@ -1105,7 +1105,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       tft.setCursor(194,15);
       tft.printf("...");
       delay(300);
-        if(m <0 || s <=0)
+        if(m <0)
       {
         m = 00;
         s = 00;
