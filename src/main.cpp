@@ -11,13 +11,14 @@ TFT_eSPI tft = TFT_eSPI();
 // Include the sketch header file that contains the image stored as an array of bytes
 // More than one image array could be stored in each header file.
 #include "anhnen.h"
-#include "nen_main.h"
+#include "nen_custom.h"
 #include "nentgtap.h"
 #include "nendangtap.h"
 #include "nentayphai.h"
 #include "nentaytrai.h"
 #include "reset.h"
 #include "nenchucmung.h"
+#include "nenmain.h"
  const int button = 34;
 int buttonstate = HIGH;
 const int button1 = 35;
@@ -28,6 +29,7 @@ const int button3 = 33;
 int button3state = HIGH;
 const int button4 = 25;
 int button4state = HIGH;
+int chooseScreen1;
 int chooseScreen2;
 int currentScreen = 1; 
 int chooseScreen3_1;
@@ -173,20 +175,20 @@ void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int
 }
 
 void IRAM_ATTR buttonCallback(){
-  if(currentScreen == 4){
+  if(currentScreen == 5){
     if(millis()-last>=200){
       if (buttonpress == 0){
         buttonpress = 1;
-        tft.fillCircle(197, 185, 20, TFT_ORANGE);
-        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
-        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
-      }
-      else {
-        buttonpress = 0;
         int downArrowX1 = 206;
         int downArrowY1 = 185;
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
+      }
+      else {
+        buttonpress = 0;
+        tft.fillCircle(197, 185, 20, TFT_ORANGE);
+        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
+        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
       }
       last = millis();
     }
@@ -199,8 +201,36 @@ void manhinh()
   drawArrayJpeg(anhnen, sizeof(anhnen), 0, 0); // Draw a jpeg image stored in memory at x,y
   
 }
+void manhinh_main(){
+  drawArrayJpeg(nen_main, sizeof(nen_main), 0, 0); // Draw a jpeg image stored in memory at x,y
 
-void manhinh_main(int chooseScreen2)
+  if(chooseScreen1 == 1) 
+    tft.fillRoundRect(18, 95, 142, 70, 10, 0x053b50);
+  else
+    tft.fillRoundRect(28, 105, 122, 50, 10, 0x053b50); 
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(2);
+  tft.setTextDatum(MC_DATUM);
+  tft.drawString("DEFAULT", 88, 130);
+
+
+  if(chooseScreen1 == 2) 
+    tft.fillRoundRect(160, 95, 144, 70, 10, 0x053b50);
+  else
+     tft.fillRoundRect(170, 105, 124, 50, 10, 0x053b50);
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(2);
+  tft.setTextDatum(MC_DATUM);
+  tft.drawString("CUSTOM", 231, 130);
+
+  int downArrowX = 10;
+  int downArrowY = 20;
+  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
+}
+
+void manhinh_custom(int chooseScreen2)
 {
 
   if(!flag){
@@ -212,31 +242,31 @@ void manhinh_main(int chooseScreen2)
     flag = true;
   }
 
-  drawArrayJpeg(nen_main, sizeof(nen_main), 0, 0); // Draw a jpeg image stored in memory at x,y
-  int downArrowX = 30;
-  int downArrowY = 215;
+  drawArrayJpeg(nen_custom, sizeof(nen_custom), 0, 0); // Draw a jpeg image stored in memory at x,y
+  int downArrowX = 10;
+  int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
 
   if(chooseScreen2 == 1) 
-    tft.fillRoundRect(16, 95, 144, 70, 10, 0x053b50);
+    tft.fillRoundRect(18, 95, 142, 70, 10, 0x053b50);
   else
-    tft.fillRoundRect(26, 105, 124, 50, 10, 0x053b50); 
+    tft.fillRoundRect(28, 105, 122, 50, 10, 0x053b50); 
 
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("RIGHT HAND", 88, 130);
+  tft.drawString("LEFT HAND", 88, 130);
 
 
    if(chooseScreen2 == 2) 
-    tft.fillRoundRect(160, 95, 142, 70, 10, 0x053b50);
+    tft.fillRoundRect(160, 95, 146, 70, 10, 0x053b50);
   else
-     tft.fillRoundRect(170, 105, 122, 50, 10, 0x053b50);
+     tft.fillRoundRect(170, 105, 126, 50, 10, 0x053b50);
 
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("LEFT HAND", 231, 130);
+  tft.drawString("RIGHT HAND", 233, 130);
 
 
  if(chooseScreen2 == 3) 
@@ -267,40 +297,12 @@ void manhinh_hand(int hand){
     }
 
   if(hand == 1)
-    drawArrayJpeg(nentayphai, sizeof(nentayphai), 0, 0);
-  else
     drawArrayJpeg(nentaytrai, sizeof(nentaytrai), 0, 0);
+  else
+    drawArrayJpeg(nentayphai, sizeof(nentayphai), 0, 0);
    // Draw a jpeg image stored in memory at x,y
   
    if( hand == 1){
-    if(person.right_hand.fingers[5].state == ACTIVE && chooseScreen3_1 == 6){
-      tft.fillRoundRect(185, 170, 50, 45, 7.5, TFT_ORANGE); // chọn o do
-      tft.fillRoundRect(80, 125, 40, 35, 7.5, TFT_ORANGE);
-      tft.fillRoundRect(135, 125, 40, 35, 7.5, TFT_ORANGE);
-      tft.fillRoundRect(80, 175, 40, 35, 7.5, TFT_ORANGE);
-      tft.fillRoundRect(135, 175, 40, 35, 7.5, TFT_ORANGE);
-      tft.fillRoundRect(190, 125, 40, 35, 7.5, TFT_ORANGE);
-    }
-    if(person.right_hand.fingers[5].state == ACTIVE && chooseScreen3_1 != 6){
-      tft.fillRoundRect(190, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[5].state == INACTIVE && chooseScreen3_1 == 6){
-      if (person.right_hand.fingers[0].state == ACTIVE && person.right_hand.fingers[1].state == ACTIVE && person.right_hand.fingers[2].state == ACTIVE && person.right_hand.fingers[3].state == ACTIVE && person.right_hand.fingers[4].state == ACTIVE){
-        tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
-        tft.fillRoundRect(80, 125, 40, 35, 7.5, 0x053b50);//di roi
-        tft.fillRoundRect(135, 125, 40, 35, 7.5, 0x053b50);//di roi
-        tft.fillRoundRect(80, 175, 40, 35, 7.5, 0x053b50);//di roi
-        tft.fillRoundRect(135, 175, 40, 35, 7.5, 0x053b50);//di roi
-        tft.fillRoundRect(190, 125, 40, 35, 7.5, 0x053b50);//di roi
-      }else{
-        tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
-      }
-
-    }
-    if(person.right_hand.fingers[5].state == INACTIVE && chooseScreen3_1 != 6){
-      tft.fillRoundRect(190, 175, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[5].state == ACTIVE && chooseScreen3_1 == 6){
       tft.fillRoundRect(185, 170, 50, 45, 7.5, TFT_ORANGE); // chọn o do
       tft.fillRoundRect(80, 125, 40, 35, 7.5, TFT_ORANGE);
@@ -328,22 +330,37 @@ void manhinh_hand(int hand){
     if(person.left_hand.fingers[5].state == INACTIVE && chooseScreen3_1 != 6){
       tft.fillRoundRect(190, 175, 40, 35, 7.5, 0x053b50);//di roi
     }
+  }else{
+    if(person.right_hand.fingers[5].state == ACTIVE && chooseScreen3_1 == 6){
+      tft.fillRoundRect(185, 170, 50, 45, 7.5, TFT_ORANGE); // chọn o do
+      tft.fillRoundRect(80, 125, 40, 35, 7.5, TFT_ORANGE);
+      tft.fillRoundRect(135, 125, 40, 35, 7.5, TFT_ORANGE);
+      tft.fillRoundRect(80, 175, 40, 35, 7.5, TFT_ORANGE);
+      tft.fillRoundRect(135, 175, 40, 35, 7.5, TFT_ORANGE);
+      tft.fillRoundRect(190, 125, 40, 35, 7.5, TFT_ORANGE);
+    }
+    if(person.right_hand.fingers[5].state == ACTIVE && chooseScreen3_1 != 6){
+      tft.fillRoundRect(190, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[5].state == INACTIVE && chooseScreen3_1 == 6){
+      if (person.right_hand.fingers[0].state == ACTIVE && person.right_hand.fingers[1].state == ACTIVE && person.right_hand.fingers[2].state == ACTIVE && person.right_hand.fingers[3].state == ACTIVE && person.right_hand.fingers[4].state == ACTIVE){
+        tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
+        tft.fillRoundRect(80, 125, 40, 35, 7.5, 0x053b50);//di roi
+        tft.fillRoundRect(135, 125, 40, 35, 7.5, 0x053b50);//di roi
+        tft.fillRoundRect(80, 175, 40, 35, 7.5, 0x053b50);//di roi
+        tft.fillRoundRect(135, 175, 40, 35, 7.5, 0x053b50);//di roi
+        tft.fillRoundRect(190, 125, 40, 35, 7.5, 0x053b50);//di roi
+      }else{
+        tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
+      }
+
+    }
+    if(person.right_hand.fingers[5].state == INACTIVE && chooseScreen3_1 != 6){
+      tft.fillRoundRect(190, 175, 40, 35, 7.5, 0x053b50);//di roi
+    }
   }
 
   if( hand == 1){
-    if(person.right_hand.fingers[0].state == ACTIVE && chooseScreen3_1 == 1){
-      tft.fillRoundRect(75, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
-    }
-    if(person.right_hand.fingers[0].state == ACTIVE && chooseScreen3_1 != 1){
-      tft.fillRoundRect(80, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[0].state == INACTIVE && chooseScreen3_1 == 1){
-      tft.fillRoundRect(75, 120, 50, 45, 7.5, 0x053b50);//DANG O DO
-    }
-    if(person.right_hand.fingers[0].state == INACTIVE && chooseScreen3_1 != 1){
-      tft.fillRoundRect(80, 125, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[0].state == ACTIVE && chooseScreen3_1 == 1){
       tft.fillRoundRect(75, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
     }
@@ -356,22 +373,22 @@ void manhinh_hand(int hand){
     if(person.left_hand.fingers[0].state == INACTIVE && chooseScreen3_1 != 1){
       tft.fillRoundRect(80, 125, 40, 35, 7.5, 0x053b50);//di roi
     }
+  }else{
+    if(person.right_hand.fingers[0].state == ACTIVE && chooseScreen3_1 == 1){
+      tft.fillRoundRect(75, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
+    }
+    if(person.right_hand.fingers[0].state == ACTIVE && chooseScreen3_1 != 1){
+      tft.fillRoundRect(80, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[0].state == INACTIVE && chooseScreen3_1 == 1){
+      tft.fillRoundRect(75, 120, 50, 45, 7.5, 0x053b50);//DANG O DO
+    }
+    if(person.right_hand.fingers[0].state == INACTIVE && chooseScreen3_1 != 1){
+      tft.fillRoundRect(80, 125, 40, 35, 7.5, 0x053b50);//di roi
+    }
   }
 
   if( hand == 1){
-    if(person.right_hand.fingers[1].state == ACTIVE && chooseScreen3_1 == 2){
-      tft.fillRoundRect(130, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
-    }
-    if(person.right_hand.fingers[1].state == ACTIVE && chooseScreen3_1 != 2){
-      tft.fillRoundRect(135, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[1].state == INACTIVE && chooseScreen3_1 == 2){
-      tft.fillRoundRect(130, 120, 50, 45, 7.5, 0x053b50); //dang o do
-    }
-    if(person.right_hand.fingers[1].state == INACTIVE && chooseScreen3_1 != 2){
-      tft.fillRoundRect(135, 125, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[1].state == ACTIVE && chooseScreen3_1 == 2){
       tft.fillRoundRect(130, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
     }
@@ -384,22 +401,22 @@ void manhinh_hand(int hand){
     if(person.left_hand.fingers[1].state == INACTIVE && chooseScreen3_1 != 2){
       tft.fillRoundRect(135, 125, 40, 35, 7.5, 0x053b50);//di roi
     }
+  }else{
+    if(person.right_hand.fingers[1].state == ACTIVE && chooseScreen3_1 == 2){
+      tft.fillRoundRect(130, 120, 50, 45, 7.5, TFT_ORANGE);//CHON O LAI
+    }
+    if(person.right_hand.fingers[1].state == ACTIVE && chooseScreen3_1 != 2){
+      tft.fillRoundRect(135, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[1].state == INACTIVE && chooseScreen3_1 == 2){
+      tft.fillRoundRect(130, 120, 50, 45, 7.5, 0x053b50); //dang o do
+    }
+    if(person.right_hand.fingers[1].state == INACTIVE && chooseScreen3_1 != 2){
+      tft.fillRoundRect(135, 125, 40, 35, 7.5, 0x053b50);//di roi
+    }
   }
 
  if( hand == 1){
-    if(person.right_hand.fingers[2].state == ACTIVE && chooseScreen3_1 == 3){
-      tft.fillRoundRect(185, 120, 50, 45, 7.5, TFT_ORANGE); //chọn o lai
-    }
-    if(person.right_hand.fingers[2].state == ACTIVE && chooseScreen3_1 != 3){
-      tft.fillRoundRect(190, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[2].state == INACTIVE && chooseScreen3_1 == 3){
-      tft.fillRoundRect(185, 120, 50, 45, 7.5, 0x053b50); //dang o do
-    }
-    if(person.right_hand.fingers[2].state == INACTIVE && chooseScreen3_1 != 3){
-      tft.fillRoundRect(190, 125, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[2].state == ACTIVE && chooseScreen3_1 == 3){
       tft.fillRoundRect(185, 120, 50, 45, 7.5, TFT_ORANGE); //chọn o lai
     }
@@ -412,22 +429,22 @@ void manhinh_hand(int hand){
     if(person.left_hand.fingers[2].state == INACTIVE && chooseScreen3_1 != 3){
       tft.fillRoundRect(190, 125, 40, 35, 7.5, 0x053b50);//di roi
     }
+  }else{
+    if(person.right_hand.fingers[2].state == ACTIVE && chooseScreen3_1 == 3){
+      tft.fillRoundRect(185, 120, 50, 45, 7.5, TFT_ORANGE); //chọn o lai
+    }
+    if(person.right_hand.fingers[2].state == ACTIVE && chooseScreen3_1 != 3){
+      tft.fillRoundRect(190, 125, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[2].state == INACTIVE && chooseScreen3_1 == 3){
+      tft.fillRoundRect(185, 120, 50, 45, 7.5, 0x053b50); //dang o do
+    }
+    if(person.right_hand.fingers[2].state == INACTIVE && chooseScreen3_1 != 3){
+      tft.fillRoundRect(190, 125, 40, 35, 7.5, 0x053b50);//di roi
+    }
   }
 
   if( hand == 1){
-    if(person.right_hand.fingers[3].state == ACTIVE && chooseScreen3_1 == 4){
-      tft.fillRoundRect(75, 170, 50, 45, 7.5, TFT_ORANGE); //CHON O DO
-    }
-    if(person.right_hand.fingers[3].state == ACTIVE && chooseScreen3_1 != 4){
-      tft.fillRoundRect(80, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[3].state == INACTIVE && chooseScreen3_1 == 4){
-      tft.fillRoundRect(75, 170, 50, 45, 7.5, 0x053b50); //DANG O DO
-    }
-    if(person.right_hand.fingers[3].state == INACTIVE && chooseScreen3_1 != 4){
-      tft.fillRoundRect(80, 175, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[3].state == ACTIVE && chooseScreen3_1 == 4){
       tft.fillRoundRect(75, 170, 50, 45, 7.5, TFT_ORANGE); //CHON O DO
     }
@@ -440,22 +457,22 @@ void manhinh_hand(int hand){
     if(person.left_hand.fingers[3].state == INACTIVE && chooseScreen3_1 != 4){
       tft.fillRoundRect(80, 175, 40, 35, 7.5, 0x053b50);//di roi
     }
+  }else{
+    if(person.right_hand.fingers[3].state == ACTIVE && chooseScreen3_1 == 4){
+      tft.fillRoundRect(75, 170, 50, 45, 7.5, TFT_ORANGE); //CHON O DO
+    }
+    if(person.right_hand.fingers[3].state == ACTIVE && chooseScreen3_1 != 4){
+      tft.fillRoundRect(80, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[3].state == INACTIVE && chooseScreen3_1 == 4){
+      tft.fillRoundRect(75, 170, 50, 45, 7.5, 0x053b50); //DANG O DO
+    }
+    if(person.right_hand.fingers[3].state == INACTIVE && chooseScreen3_1 != 4){
+      tft.fillRoundRect(80, 175, 40, 35, 7.5, 0x053b50);//di roi
+    }
   }
 
   if( hand == 1){
-    if(person.right_hand.fingers[4].state == ACTIVE && chooseScreen3_1 == 5){
-      tft.fillRoundRect(130, 170, 50, 45, 7.5, TFT_ORANGE); //chọn o do
-    }
-    if(person.right_hand.fingers[4].state == ACTIVE && chooseScreen3_1 != 5){
-      tft.fillRoundRect(135, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
-    }
-    if(person.right_hand.fingers[4].state == INACTIVE && chooseScreen3_1 == 5){
-      tft.fillRoundRect(130, 170, 50, 45, 7.5, 0x053b50); //dang o do
-    }
-    if(person.right_hand.fingers[4].state == INACTIVE && chooseScreen3_1 != 5){
-      tft.fillRoundRect(135, 175, 40, 35, 7.5, 0x053b50);//di roi
-    }
-  }else{
     if(person.left_hand.fingers[4].state == ACTIVE && chooseScreen3_1 == 5){
       tft.fillRoundRect(130, 170, 50, 45, 7.5, TFT_ORANGE); //chọn o do
     }
@@ -466,6 +483,19 @@ void manhinh_hand(int hand){
       tft.fillRoundRect(130, 170, 50, 45, 7.5, 0x053b50); //dang o do
     }
     if(person.left_hand.fingers[4].state == INACTIVE && chooseScreen3_1 != 5){
+      tft.fillRoundRect(135, 175, 40, 35, 7.5, 0x053b50);//di roi
+    }
+  }else{
+    if(person.right_hand.fingers[4].state == ACTIVE && chooseScreen3_1 == 5){
+      tft.fillRoundRect(130, 170, 50, 45, 7.5, TFT_ORANGE); //chọn o do
+    }
+    if(person.right_hand.fingers[4].state == ACTIVE && chooseScreen3_1 != 5){
+      tft.fillRoundRect(135, 175, 40, 35, 7.5, TFT_ORANGE);//chon r di
+    }
+    if(person.right_hand.fingers[4].state == INACTIVE && chooseScreen3_1 == 5){
+      tft.fillRoundRect(130, 170, 50, 45, 7.5, 0x053b50); //dang o do
+    }
+    if(person.right_hand.fingers[4].state == INACTIVE && chooseScreen3_1 != 5){
       tft.fillRoundRect(135, 175, 40, 35, 7.5, 0x053b50);//di roi
     }
   }
@@ -529,8 +559,8 @@ void manhinh_time() {
     }
 
   drawArrayJpeg(nentgtap, sizeof(nentgtap), 0, 0); // Draw a jpeg image stored in memory at x,y
-  int downArrowX = 30;
-  int downArrowY = 215;
+  int downArrowX = 10;
+  int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
 
   if (thoigian.phutgiay[0].state == ON && chooseScreen3_2 == 1)   
@@ -667,11 +697,13 @@ void manhinh_timing(){
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("(secs)", 205, 107.5); 
 
-    int downArrowX1 = 206;
-    int downArrowY1 = 185;
-    tft.fillCircle(197, 185, 20, TFT_ORANGE);
-    tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
-
+    // int downArrowX1 = 206;
+    // int downArrowY1 = 185;
+    // tft.fillCircle(197, 185, 20, TFT_ORANGE);
+    // tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
+        tft.fillCircle(197, 185, 20, TFT_ORANGE);
+        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
+        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
 
   tft.setTextColor(0x053b50);
   tft.setTextSize(4);
@@ -686,6 +718,10 @@ void manhinh_timing(){
 
 void manhinh_congra(){
   drawArrayJpeg(nenchucmung, sizeof(nenchucmung), 0, 0); // Draw a jpeg image stored in memory at x,y
+
+  int downArrowX = 10;
+  int downArrowY = 20;
+  tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
 }
 
 void setup() {
@@ -712,15 +748,46 @@ void loop (){
   button1state = digitalRead(button1);//left
   button2state = digitalRead(button2);//right
   button4state = digitalRead(button4);//next
-//enter
+
   if(buttonstate == 0 && button_pressed == false && currentScreen == 1)
+  {
+    chooseScreen1=1;
+    currentScreen++;
+    delay(100);
+    manhinh_main();
+    button_pressed = true;
+  }
+  if(buttonstate == 1){
+    button_pressed = false;
+  }
+
+  if(currentScreen == 2 && button2state ==0){//phai
+    chooseScreen1++;
+    if(chooseScreen1 == 3 )
+      chooseScreen1 = 1;
+    delay(100);   
+    manhinh_main();
+  }
+
+  if(currentScreen == 2 && button1state ==0){//trai
+    chooseScreen1--;
+    if(chooseScreen1 == 0)
+      chooseScreen1 = 2;
+    delay(100); 
+    manhinh_main();
+  }
+
+
+
+//enter custom
+  if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseScreen1 == 2)
   {
     Serial.println(chooseScreen2); 
     Serial.println(currentScreen);
       chooseScreen2=1;
       currentScreen++;
       delay(100);
-      manhinh_main(chooseScreen2);
+      manhinh_custom(chooseScreen2);
     
     button_pressed = true;
 
@@ -730,27 +797,27 @@ void loop (){
   }
 
 
-  //man hinh 2
+  //man hinh custom
   // qua phai
-  if(currentScreen == 2 && button2state ==0){
+  if(currentScreen == 3 && button2state ==0 && chooseScreen1 == 2){
     chooseScreen2++;
     if(chooseScreen2 == 4 )
       chooseScreen2 = 1;
     Serial.println(chooseScreen2);
     delay(100);   
-    manhinh_main(chooseScreen2);
+    manhinh_custom(chooseScreen2);
   }
   // qua trai
-  if(currentScreen == 2 && button1state ==0){
+  if(currentScreen == 3 && button1state ==0 && chooseScreen1 == 2){
     chooseScreen2--;
     if(chooseScreen2 == 0)
       chooseScreen2 = 3;
     Serial.println(chooseScreen2);
      delay(100); 
-    manhinh_main(chooseScreen2);
+    manhinh_custom(chooseScreen2);
   }
   // vao man hinh tay phai, tay trai (manhinh_hand)
-  if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && (chooseScreen2 == 1 || chooseScreen2 == 2)){
+  if(buttonstate == 0 && button_pressed == false && currentScreen == 3 && (chooseScreen2 == 1 || chooseScreen2 == 2)){
       currentScreen++;
       chooseScreen3_1=1;
       delay(100);
@@ -763,7 +830,7 @@ void loop (){
     button_pressed = false;
   }
   // vao man hinh tg tap(manhinh_time)
-  if(currentScreen == 2 && chooseScreen2 == 3 && buttonstate == 0 && button_pressed == false){
+  if(currentScreen == 3 && chooseScreen2 == 3 && buttonstate == 0 && button_pressed == false){
     currentScreen++;
     delay(100);
     manhinh_time();
@@ -776,7 +843,7 @@ void loop (){
   }
 
 //man hinh 3
-  if(currentScreen == 3 && button2state ==0 && flag1 == 2 ){//phai
+  if(currentScreen == 4 && button2state ==0 && flag1 == 2 ){//phai
     chooseScreen3_1++;
     if(chooseScreen3_1 == 7 ){
       chooseScreen3_1 = 1;
@@ -786,7 +853,7 @@ void loop (){
     manhinh_hand(chooseScreen2);
   }
 
-  if(currentScreen == 3 && button1state ==0 && flag1 == 2){//TRAI
+  if(currentScreen == 4 && button1state ==0 && flag1 == 2){//TRAI
     chooseScreen3_1--;
     if(chooseScreen3_1 == 0)
       chooseScreen3_1 = 6;
@@ -795,39 +862,11 @@ void loop (){
     manhinh_hand(chooseScreen2);
   }
 
-  if(currentScreen == 3 && chooseScreen3_1 >= 1 && chooseScreen3_1 <=6 && buttonstate == 0 && button_pressed == false && flag1 == 2){
+  if(currentScreen == 4 && chooseScreen3_1 >= 1 && chooseScreen3_1 <=6 && buttonstate == 0 && button_pressed == false && flag1 == 2){
       if(chooseScreen2 == 1){  
         if(chooseScreen3_1 <=5){
-          if(person.right_hand.fingers[chooseScreen3_1-1].state == ACTIVE)
-            person.right_hand.fingers[chooseScreen3_1-1].state = INACTIVE;
-          else
-            person.right_hand.fingers[chooseScreen3_1-1].state = ACTIVE;
-        }
-        if(chooseScreen3_1 == 6) {
-            if (person.right_hand.fingers[5].state == ACTIVE){
-              person.right_hand.fingers[5].state = INACTIVE;
-              person.right_hand.fingers[0].state = INACTIVE;
-              person.right_hand.fingers[1].state = INACTIVE;
-              person.right_hand.fingers[2].state = INACTIVE;
-              person.right_hand.fingers[3].state = INACTIVE;
-              person.right_hand.fingers[4].state = INACTIVE;
-            }
-            else{
-              person.right_hand.fingers[5].state = ACTIVE;
-              person.right_hand.fingers[0].state = ACTIVE;
-              person.right_hand.fingers[1].state = ACTIVE;
-              person.right_hand.fingers[2].state = ACTIVE;
-              person.right_hand.fingers[3].state = ACTIVE;
-              person.right_hand.fingers[4].state = ACTIVE;
-            }
-        }
-        button_pressed = true;
-      }
-
-      if(chooseScreen2 == 2 ){
-        if(chooseScreen3_1 <=5){
           if(person.left_hand.fingers[chooseScreen3_1-1].state == ACTIVE)
-            person.left_hand.fingers[chooseScreen3_1-1].state = INACTIVE; 
+            person.left_hand.fingers[chooseScreen3_1-1].state = INACTIVE;
           else
             person.left_hand.fingers[chooseScreen3_1-1].state = ACTIVE;
         }
@@ -851,6 +890,34 @@ void loop (){
         }
         button_pressed = true;
       }
+
+      if(chooseScreen2 == 2 ){
+        if(chooseScreen3_1 <=5){
+          if(person.right_hand.fingers[chooseScreen3_1-1].state == ACTIVE)
+            person.right_hand.fingers[chooseScreen3_1-1].state = INACTIVE; 
+          else
+            person.right_hand.fingers[chooseScreen3_1-1].state = ACTIVE;
+        }
+        if(chooseScreen3_1 == 6) {
+            if (person.right_hand.fingers[5].state == ACTIVE){
+              person.right_hand.fingers[5].state = INACTIVE;
+              person.right_hand.fingers[0].state = INACTIVE;
+              person.right_hand.fingers[1].state = INACTIVE;
+              person.right_hand.fingers[2].state = INACTIVE;
+              person.right_hand.fingers[3].state = INACTIVE;
+              person.right_hand.fingers[4].state = INACTIVE;
+            }
+            else{
+              person.right_hand.fingers[5].state = ACTIVE;
+              person.right_hand.fingers[0].state = ACTIVE;
+              person.right_hand.fingers[1].state = ACTIVE;
+              person.right_hand.fingers[2].state = ACTIVE;
+              person.right_hand.fingers[3].state = ACTIVE;
+              person.right_hand.fingers[4].state = ACTIVE;
+            }
+        }
+        button_pressed = true;
+      }
       delay(100);
        manhinh_hand(chooseScreen2);
        button_pressed = true;
@@ -859,7 +926,7 @@ void loop (){
     button_pressed = false;
   }
 // manhinh_time
-if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
+if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
     chooseScreen3_2++;
     if(chooseScreen3_2 == 8 ){
       chooseScreen3_2 = 1;
@@ -868,7 +935,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     manhinh_time();
   }
 
-  if(currentScreen == 3 && button1state ==0 && flag2 == 2 && a == 0){//TRAI
+  if(currentScreen == 4 && button1state ==0 && flag2 == 2 && a == 0){//TRAI
     chooseScreen3_2--;
     if(chooseScreen3_2 == 0)
       chooseScreen3_2 = 7;
@@ -876,7 +943,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     manhinh_time();
   }
 
-  if(currentScreen == 3 && chooseScreen3_2 >= 1 && chooseScreen3_2 <=7 && buttonstate == 0 && button_pressed == false && flag2 == 2){
+  if(currentScreen == 4 && chooseScreen3_2 >= 1 && chooseScreen3_2 <=7 && buttonstate == 0 && button_pressed == false && flag2 == 2){
     if (chooseScreen3_2==3){
       m = 00;
       s = 00;
@@ -969,7 +1036,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     button_pressed = false;
   }
   
-  if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 1){//phai tăng
+  if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 1){//phai tăng
     if(chooseScreen3_2 == 1){
       m++;
       if(m == 60 )
@@ -992,7 +1059,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
     manhinh_time();
   }
 
-  if(currentScreen == 3 && button1state ==0 && flag2 == 2 && a == 1){//TRAI giảm
+  if(currentScreen == 4 && button1state ==0 && flag2 == 2 && a == 1){//TRAI giảm
     if (chooseScreen3_2 == 1){
       m--;
       if(m <= 00 )
@@ -1019,50 +1086,47 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
         manhinh();
         currentScreen--;
         break;
-      // case 3:
-      //   delay(100);
-      //   chooseScreen2 = 1;
-      //   chooseScreen3_1 = 1;
-      //   chooseScreen3_2 = 1;
-      //   manhinh2(chooseScreen2);
-      //   currentScreen--;
-      //   break;
+      case 3:
+        delay(100);
+        manhinh_main();
+        currentScreen--;
+        break;
       default:
         break;
     }
   }
-  if(button3state == 0 && currentScreen == 3 && flag2 == 2){
+  if(button3state == 0 && currentScreen == 4 && flag2 == 2){
       delay(100);
       chooseScreen2 = 1;
       chooseScreen3_1 = 1;
       chooseScreen3_2 = 1;
-      manhinh_main(chooseScreen2);
+      manhinh_custom(chooseScreen2);
       currentScreen--;
   }
 
-  if(button3state == 0 && currentScreen == 4){
+  if(button3state == 0 && currentScreen == 5){
       delay(100);
       manhinh_time();
       currentScreen--;
   }
   //next
-  if(button4state == 0 && currentScreen == 3 && flag1 == 2){
+  if(button4state == 0 && currentScreen == 4 && flag1 == 2){
       delay(100);
       chooseScreen2 = 1;
       chooseScreen3_1 = 1;
       chooseScreen3_2 = 1;
-      manhinh_main(chooseScreen2);
+      manhinh_custom(chooseScreen2);
       currentScreen--;
   }
 
-  if(button4state == 0 && currentScreen == 3 && flag2 == 2 && (m>00 || s>00)){
+  if(button4state == 0 && currentScreen == 4 && flag2 == 2 && (m>00 || s>00)){
     delay(50);
     manhinh_timing();
     currentScreen++;
     buttonpress = 0;
   }
 // manhinh_timing
-  if(buttonpress == 0 && currentScreen == 4){
+  if(buttonpress == 0 && currentScreen == 5){
     if(millis()-last>=800){
       tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
       tft.setCursor(108,70);
@@ -1085,12 +1149,6 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
         s=59;
         m--;
       }
-      // if(m <0)
-      // {
-      //   m = 00;
-      //   s = 00;
-
-      // }
       last = millis();
     }
       tft.fillRoundRect(193, 20, 40, 10, 2.5, TFT_WHITE); 
@@ -1115,7 +1173,7 @@ if(currentScreen == 3 && button2state ==0 && flag2 == 2 && a == 0){//phai
       }
       }
   //manhinh_congra
-  if(button3state == 0 && currentScreen == 5){
+  if(button3state == 0 && currentScreen == 6){
       delay(100);
       manhinh_time();
       currentScreen = currentScreen - 2;
