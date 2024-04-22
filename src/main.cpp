@@ -29,6 +29,17 @@ const int button3 = 33;
 int button3state = HIGH;
 const int button4 = 25;
 int button4state = HIGH;
+const int van = 22;
+const int van1 = 21;
+const int van2 = 5;
+const int van3 = 17;
+const int van4 = 16;
+const int van5 = 26;
+const int van6 = 27;
+const int dongco = 13;
+bool dongcostate;
+bool vanstate;
+bool van6state;
 int chooseScreen1;
 int chooseScreen2;
 int currentScreen = 1; 
@@ -47,6 +58,7 @@ int m_temp;
 int s_temp;
 int tt_button = 0;
 int last ;
+int last2 ;
 int buttonpress = 1;
 
 typedef enum {
@@ -179,6 +191,8 @@ void IRAM_ATTR buttonCallback(){
     if(millis()-last>=200){
       if (buttonpress == 0){
         buttonpress = 1;
+        dongcostate = !dongcostate;
+        digitalWrite(dongco, dongcostate);
         int downArrowX1 = 206;
         int downArrowY1 = 185;
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
@@ -186,6 +200,8 @@ void IRAM_ATTR buttonCallback(){
       }
       else {
         buttonpress = 0;
+        dongcostate = !dongcostate;
+        digitalWrite(dongco, dongcostate);
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
         tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
@@ -732,6 +748,14 @@ void setup() {
   pinMode(button2, INPUT);
   pinMode(button3, INPUT);
   pinMode(button4, INPUT);
+  pinMode(dongco, OUTPUT);
+  pinMode(van, OUTPUT);
+  pinMode(van1, OUTPUT);
+  pinMode(van2, OUTPUT);
+  pinMode(van3, OUTPUT);
+  pinMode(van4, OUTPUT);
+  pinMode(van5, OUTPUT);
+  pinMode(van6, OUTPUT);
 
   attachInterrupt(digitalPinToInterrupt(button), buttonCallback,FALLING);
 
@@ -1124,10 +1148,29 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
     manhinh_timing();
     currentScreen++;
     buttonpress = 0;
+
+    vanstate = HIGH;
+    van6state = LOW;
+    dongcostate = HIGH;
+    digitalWrite(van, HIGH);
+    digitalWrite(van6, LOW);
+    if(person.right_hand.fingers[0].state == ACTIVE || person.left_hand.fingers[0].state == ACTIVE)
+      digitalWrite(van1, HIGH);             
+    if(person.right_hand.fingers[1].state == ACTIVE || person.left_hand.fingers[1].state == ACTIVE)  
+      digitalWrite(van2, HIGH);
+    if(person.right_hand.fingers[2].state == ACTIVE || person.left_hand.fingers[2].state == ACTIVE)  
+      digitalWrite(van3, HIGH);
+    if(person.right_hand.fingers[3].state == ACTIVE || person.left_hand.fingers[3].state == ACTIVE) 
+      digitalWrite(van4, HIGH);
+    if(person.right_hand.fingers[4].state == ACTIVE || person.left_hand.fingers[4].state == ACTIVE)
+      digitalWrite(van5, HIGH);
+
+    digitalWrite(dongco, HIGH);
   }
+
 // manhinh_timing
   if(buttonpress == 0 && currentScreen == 5){
-    if(millis()-last>=800){
+    if(millis()-last>=900){
       tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
       tft.setCursor(108,70);
       tft.setTextColor(TFT_WHITE);
@@ -1151,6 +1194,17 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       }
       last = millis();
     }
+    if(millis()-last2>=4000){
+        vanstate = !vanstate;
+        digitalWrite(van, vanstate);
+
+        van6state = !van6state;
+        digitalWrite(van6, van6state);
+        Serial.println(vanstate);
+        Serial.println(van6state);
+        last2 = millis();
+    }
+
       tft.fillRoundRect(193, 20, 40, 10, 2.5, TFT_WHITE); 
       tft.setTextColor(0x053b50);
       tft.setCursor(194,15);
@@ -1167,6 +1221,14 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       {
         m = 00;
         s = 00;
+        digitalWrite(van, LOW);
+        digitalWrite(van1, LOW);
+        digitalWrite(van2, LOW);
+        digitalWrite(van3, LOW);
+        digitalWrite(van4, LOW);
+        digitalWrite(van5, LOW);
+        digitalWrite(van6, LOW);
+        digitalWrite(dongco, LOW);
         //delay(100);
         manhinh_congra();
         currentScreen++;
