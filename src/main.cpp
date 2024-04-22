@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
+#include "PCF8575.h"
 
+PCF8575 pcf8575(0x27);
 TFT_eSPI tft = TFT_eSPI();
 
 #include <JPEGDecoder.h>
@@ -743,6 +745,9 @@ void manhinh_congra(){
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+
+  pcf8575.begin();
+
   pinMode(button, INPUT);
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
