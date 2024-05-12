@@ -2,9 +2,9 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #define CF_S24  &Satisfy_24
-// #include "PCF8575.h"
+#include "PCF8575.h"
 
-// PCF8575 pcf8575(0x27);
+PCF8575 pcf8575(0x27);
 TFT_eSPI tft = TFT_eSPI();
 
 #include <JPEGDecoder.h>
@@ -45,10 +45,14 @@ const int van3 = 17;
 const int van4 = 16;
 const int van5 = 26;
 const int van6 = 27;
-const int dongco = 13;
-bool dongcostate;
-bool vanstate;
-bool van6state;
+const int dongco_L = 13;
+const int dongco_R = 12;
+bool dongco_L_state;
+bool dongco_R_state;
+bool van_L_state;
+bool van6_L_state;
+bool van_R_state;
+bool van6_R_state;
 int chooseScreen1;
 int chooseScreen2;
 int chooseScreen2_2;
@@ -205,8 +209,20 @@ void IRAM_ATTR buttonCallback(){
     if(millis()-last>=200){
       if (buttonpress == 0){
         buttonpress = 1;
-        dongcostate = !dongcostate;
-        digitalWrite(dongco, dongcostate);
+        for(int i=0; i<=4; i++){
+          if(person.left_hand.fingers[i].state == ACTIVE){
+            dongco_L_state = !dongco_L_state;
+            digitalWrite(dongco_L, dongco_L_state);
+            Serial.println("stop dong co tay trai");
+            break;
+          }
+          if(person.right_hand.fingers[i].state == ACTIVE){
+            dongco_R_state = !dongco_R_state;
+            digitalWrite(dongco_R, dongco_R_state);
+            Serial.println("stop dong co tay phai");
+            break;
+          }
+        }
         int downArrowX1 = 206;
         int downArrowY1 = 185;
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
@@ -214,8 +230,20 @@ void IRAM_ATTR buttonCallback(){
       }
       else {
         buttonpress = 0;
-        dongcostate = !dongcostate;
-        digitalWrite(dongco, dongcostate);
+        for(int i=0; i<=4; i++){
+          if(person.left_hand.fingers[i].state == ACTIVE){
+            dongco_L_state = !dongco_L_state;
+            digitalWrite(dongco_L, dongco_L_state);
+            Serial.println("chay dong co tay trai");
+            break;
+          }
+          if(person.right_hand.fingers[i].state == ACTIVE){
+            dongco_R_state = !dongco_R_state;
+            digitalWrite(dongco_R, dongco_R_state);
+            Serial.println("chay dong co tay phai");
+            break;
+          }
+        }
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
         tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
@@ -852,14 +880,32 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  // pcf8575.begin();
+      pcf8575.begin();
+      pcf8575.pinMode(P0, OUTPUT);
+        pcf8575.pinMode(P1, OUTPUT);
+          pcf8575.pinMode(P2, OUTPUT);
+            pcf8575.pinMode(P3, OUTPUT);
+              pcf8575.pinMode(P4, OUTPUT);
+                pcf8575.pinMode(P5, OUTPUT);
+                  pcf8575.pinMode(P6, OUTPUT);
+                    pcf8575.pinMode(P7, OUTPUT);
+
+    pcf8575.pinMode(P8, OUTPUT);
+        pcf8575.pinMode(P9, OUTPUT);
+          pcf8575.pinMode(P10, OUTPUT);
+            pcf8575.pinMode(P11, OUTPUT);
+              pcf8575.pinMode(P12, OUTPUT);
+                pcf8575.pinMode(P13, OUTPUT);
+                  pcf8575.pinMode(P14, OUTPUT);
+                    pcf8575.pinMode(P15, OUTPUT);
 
   pinMode(button, INPUT);
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
   pinMode(button3, INPUT);
   pinMode(button4, INPUT);
-  pinMode(dongco, OUTPUT);
+  pinMode(dongco_L, OUTPUT);
+  pinMode(dongco_R, OUTPUT);
   pinMode(van, OUTPUT);
   pinMode(van1, OUTPUT);
   pinMode(van2, OUTPUT);
@@ -1399,32 +1445,71 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
     currentScreen++;
     buttonpress = 0;
 
-    vanstate = HIGH;
-    van6state = LOW;
-    dongcostate = HIGH;
-    digitalWrite(van, HIGH);
-    digitalWrite(van6, LOW);
-    if(person.right_hand.fingers[0].state == ACTIVE || person.left_hand.fingers[0].state == ACTIVE){
-      digitalWrite(van1, HIGH);             
-      Serial.println("van1");
+    for(int i = 0; i<=4; i++){
+      if(person.left_hand.fingers[i].state == ACTIVE) {
+        van_L_state = LOW;
+        van6_L_state = HIGH;
+        dongco_L_state = HIGH;
+        pcf8575.digitalWrite(P0, van_L_state);
+        pcf8575.digitalWrite(P6, van6_L_state);
+
+        if(person.left_hand.fingers[0].state == ACTIVE){
+          pcf8575.digitalWrite(P1, LOW);             
+          Serial.println("van1_L");
+        }
+        if(person.left_hand.fingers[1].state == ACTIVE){
+          pcf8575.digitalWrite(P2, LOW); 
+          Serial.println("van2_L");
+        }
+        if(person.left_hand.fingers[2].state == ACTIVE){
+          pcf8575.digitalWrite(P3, LOW); 
+          Serial.println("van3_L");
+        }
+        if(person.left_hand.fingers[3].state == ACTIVE){
+          pcf8575.digitalWrite(P4, LOW); 
+          Serial.println("van4_L");
+        }
+        if(person.left_hand.fingers[4].state == ACTIVE){
+          pcf8575.digitalWrite(P5, LOW); 
+          Serial.println("van5_L");
+        }
+        digitalWrite(dongco_L, dongco_L_state);
+        Serial.println("chay dong co tay trai");
+        break;
+      }
+
+      if(person.right_hand.fingers[i].state == ACTIVE) {
+        van_R_state = LOW;
+        van6_R_state = HIGH;
+        dongco_R_state = HIGH;
+        pcf8575.digitalWrite(P9, van_R_state);
+        pcf8575.digitalWrite(P15, van6_R_state);
+
+        if(person.right_hand.fingers[0].state == ACTIVE){
+          pcf8575.digitalWrite(P10, LOW);             
+          Serial.println("van1_R");
+        }
+        if(person.right_hand.fingers[1].state == ACTIVE){
+          pcf8575.digitalWrite(P11, LOW); 
+          Serial.println("van2_R");
+        }
+        if(person.right_hand.fingers[2].state == ACTIVE){
+          pcf8575.digitalWrite(P12, LOW); 
+          Serial.println("van3_R");
+        }
+        if(person.right_hand.fingers[3].state == ACTIVE){
+          pcf8575.digitalWrite(P13, LOW); 
+          Serial.println("van4_R");
+        }
+        if(person.right_hand.fingers[4].state == ACTIVE){
+          pcf8575.digitalWrite(P14, LOW); 
+          Serial.println("van5_R");
+        }
+        digitalWrite(dongco_R, dongco_R_state);
+        Serial.println("chay dong co tay phai");
+        break;
+      }
     }
-    if(person.right_hand.fingers[1].state == ACTIVE || person.left_hand.fingers[1].state == ACTIVE){
-      digitalWrite(van2, HIGH);
-      Serial.println("van2");
-    }
-    if(person.right_hand.fingers[2].state == ACTIVE || person.left_hand.fingers[2].state == ACTIVE){
-      digitalWrite(van3, HIGH);
-      Serial.println("van3");
-    }
-    if(person.right_hand.fingers[3].state == ACTIVE || person.left_hand.fingers[3].state == ACTIVE){
-      digitalWrite(van4, HIGH);
-      Serial.println("van4");
-    }
-    if(person.right_hand.fingers[4].state == ACTIVE || person.left_hand.fingers[4].state == ACTIVE){
-      digitalWrite(van5, HIGH);
-      Serial.println("van5");
-    }
-    digitalWrite(dongco, HIGH);
   }
 
 // manhinh_timing
@@ -1454,13 +1539,26 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       last = millis();
     }
     if(millis()-last2>=4000){
-        vanstate = !vanstate;
-        digitalWrite(van, vanstate);
+        for(int i=0; i<=4; i++){
+          if(person.left_hand.fingers[i].state == ACTIVE){
+            van_L_state = !van_L_state;
+            pcf8575.digitalWrite(P0, van_L_state);
 
-        van6state = !van6state;
-        digitalWrite(van6, van6state);
-        Serial.println(vanstate);
-        Serial.println(van6state);
+            van6_L_state = !van6_L_state;
+            pcf8575.digitalWrite(P6, van6_L_state);
+            Serial.println("swap tay trai");
+            break;
+          }
+          if(person.right_hand.fingers[i].state == ACTIVE){
+            van_R_state = !van_R_state;
+            pcf8575.digitalWrite(P9, van_R_state);
+
+            van6_R_state = !van6_R_state;
+            pcf8575.digitalWrite(P15, van6_R_state);
+            Serial.println("swap tay phai");
+            break;
+          }
+        }
         last2 = millis();
     }
 
@@ -1481,13 +1579,13 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
         m = 00;
         s = 00;
 
-        digitalWrite(dongco, LOW);
-        
+        digitalWrite(dongco_L, LOW);
+        digitalWrite(dongco_R, LOW);
         //delay(100);
         manhinh_congra();
         currentScreen++;
       }
-      }
+  }
   //manhinh_congra back
   if(button3state == 0 && currentScreen == 6){
       delay(100);
