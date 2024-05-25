@@ -23,28 +23,16 @@ TFT_eSPI tft = TFT_eSPI();
 #include "reset.h"
 #include "nenchucmung.h"
 #include "nenmain.h"
-//  const int button = 34; //TEST
 const int button = 36;
 int buttonstate = HIGH;
-// const int button1 = 35; //TEST
 const int button1 = 39;
 int button1state = HIGH;
-// const int button2 = 32; //TEST
 const int button2 = 34;     
 int button2state = HIGH;
-// const int button3 = 33; //TEST
 const int button3 = 35;
 int button3state = HIGH;
-// const int button4 = 25; //TEST
 const int button4 = 32;
 int button4state = HIGH;
-const int van = 22;
-const int van1 = 21;
-const int van2 = 5;
-const int van3 = 17;
-const int van4 = 16;
-const int van5 = 26;
-const int van6 = 27;
 const int dongco_L = 14;
 const int dongco_R = 12;
 bool dongco_L_state;
@@ -65,17 +53,18 @@ bool co1 = false;
 int flag1;
 int flag2;
 int flag3;
-int chooseScreen3_1_temp = 1;
 bool button_pressed = false;
+bool button1_pressed = false;
+bool button2_pressed = false;
+bool button3_pressed = false;
+bool button4_pressed = false;
 int m = 00;
 int s = 00;
 int a = 0;
-int m_temp;
-int s_temp;
-int tt_button = 0;
 int last ;
 int last2 ;
 int buttonpress = 1;
+int asd = 0;
 
 typedef enum {
     ON,
@@ -320,7 +309,8 @@ void manhinh_main(){
   {
     thoigian.phutgiay[i].state = OFF;
   }
-
+  m=00;
+  s=00;
 }
 
 void manhinh_default(int chooseScreen2_2){
@@ -439,10 +429,10 @@ void manhinh_custom(int chooseScreen2)
   tft.drawString("LEFT HAND", 88, 130);
 
 
-   if(chooseScreen2 == 2) 
-    tft.fillRoundRect(160, 95, 146, 70, 10, 0x053b50);
-  else
-     tft.fillRoundRect(170, 105, 126, 50, 10, 0x053b50);
+    if(chooseScreen2 == 2) 
+      tft.fillRoundRect(160, 95, 146, 70, 10, 0x053b50);
+    else
+      tft.fillRoundRect(170, 105, 126, 50, 10, 0x053b50);
 
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
@@ -450,10 +440,10 @@ void manhinh_custom(int chooseScreen2)
   tft.drawString("RIGHT HAND", 233, 130);
 
 
- if(chooseScreen2 == 3) 
-    tft.fillRoundRect(90, 165, 140, 70, 10, 0x053b50);
-  else
-    tft.fillRoundRect(100, 175, 120, 50, 10, 0x053b50);
+    if(chooseScreen2 == 3) 
+      tft.fillRoundRect(90, 165, 140, 70, 10, 0x053b50);
+    else
+      tft.fillRoundRect(100, 175, 120, 50, 10, 0x053b50);
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
   tft.setTextDatum(MC_DATUM);
@@ -481,7 +471,6 @@ void manhinh_hand(int hand){
     drawArrayJpeg(nentaytrai, sizeof(nentaytrai), 0, 0);
   else
     drawArrayJpeg(nentayphai, sizeof(nentayphai), 0, 0);
-   // Draw a jpeg image stored in memory at x,y
   
    if( hand == 1){
     if(person.left_hand.fingers[5].state == ACTIVE && chooseScreen3_1 == 6){
@@ -506,7 +495,6 @@ void manhinh_hand(int hand){
       }else{
         tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
       }
-
     }
     if(person.left_hand.fingers[5].state == INACTIVE && chooseScreen3_1 != 6){
       tft.fillRoundRect(190, 175, 40, 35, 7.5, 0x053b50);//di roi
@@ -534,7 +522,6 @@ void manhinh_hand(int hand){
       }else{
         tft.fillRoundRect(185, 170, 50, 45, 7.5, 0x053b50); //dang o do
       }
-
     }
     if(person.right_hand.fingers[5].state == INACTIVE && chooseScreen3_1 != 6){
       tft.fillRoundRect(190, 175, 40, 35, 7.5, 0x053b50);//di roi
@@ -878,10 +865,6 @@ void manhinh_timing(){
   tft.setTextDatum(MC_DATUM);  
   tft.drawString("(secs)", 205, 107.5); 
 
-    // int downArrowX1 = 206;
-    // int downArrowY1 = 185;
-    // tft.fillCircle(197, 185, 20, TFT_ORANGE);
-    // tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
         tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
@@ -900,13 +883,6 @@ void manhinh_timing(){
 void manhinh_congra(){
   drawArrayJpeg(nenchucmung, sizeof(nenchucmung), 0, 0); // Draw a jpeg image stored in memory at x,y
 
-        // digitalWrite(van, LOW);
-        // digitalWrite(van1, LOW);
-        // digitalWrite(van2, LOW);
-        // digitalWrite(van3, LOW);
-        // digitalWrite(van4, LOW);
-        // digitalWrite(van5, LOW);
-        // digitalWrite(van6, LOW);
   pcf8575.digitalWrite(P0, HIGH);
   pcf8575.digitalWrite(P1, HIGH);
   pcf8575.digitalWrite(P2, HIGH);
@@ -937,7 +913,6 @@ for(int i=0; i<=1; i++)
   thoigian.phutgiay[i].state = OFF;
 }
 
-
   int downArrowX = 10;
   int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
@@ -947,24 +922,24 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-      pcf8575.begin();
-      pcf8575.pinMode(P0, OUTPUT);
-        pcf8575.pinMode(P1, OUTPUT);
-          pcf8575.pinMode(P2, OUTPUT);
-            pcf8575.pinMode(P3, OUTPUT);
-              pcf8575.pinMode(P4, OUTPUT);
-                pcf8575.pinMode(P5, OUTPUT);
-                  pcf8575.pinMode(P6, OUTPUT);
-                    pcf8575.pinMode(P7, OUTPUT);
+    pcf8575.begin();
+    pcf8575.pinMode(P0, OUTPUT);
+    pcf8575.pinMode(P1, OUTPUT);
+    pcf8575.pinMode(P2, OUTPUT);
+    pcf8575.pinMode(P3, OUTPUT);
+    pcf8575.pinMode(P4, OUTPUT);
+    pcf8575.pinMode(P5, OUTPUT);
+    pcf8575.pinMode(P6, OUTPUT);
+    pcf8575.pinMode(P7, OUTPUT);
 
     pcf8575.pinMode(P8, OUTPUT);
-        pcf8575.pinMode(P9, OUTPUT);
-          pcf8575.pinMode(P10, OUTPUT);
-            pcf8575.pinMode(P11, OUTPUT);
-              pcf8575.pinMode(P12, OUTPUT);
-                pcf8575.pinMode(P13, OUTPUT);
-                  pcf8575.pinMode(P14, OUTPUT);
-                    pcf8575.pinMode(P15, OUTPUT);
+    pcf8575.pinMode(P9, OUTPUT);
+    pcf8575.pinMode(P10, OUTPUT);
+    pcf8575.pinMode(P11, OUTPUT);
+    pcf8575.pinMode(P12, OUTPUT);
+    pcf8575.pinMode(P13, OUTPUT);
+    pcf8575.pinMode(P14, OUTPUT);
+    pcf8575.pinMode(P15, OUTPUT);
 
   pinMode(button, INPUT);
   pinMode(button1, INPUT);
@@ -973,13 +948,6 @@ void setup() {
   pinMode(button4, INPUT);
   pinMode(dongco_L, OUTPUT);
   pinMode(dongco_R, OUTPUT);
-  pinMode(van, OUTPUT);
-  pinMode(van1, OUTPUT);
-  pinMode(van2, OUTPUT);
-  pinMode(van3, OUTPUT);
-  pinMode(van4, OUTPUT);
-  pinMode(van5, OUTPUT);
-  pinMode(van6, OUTPUT);
 
   attachInterrupt(digitalPinToInterrupt(button), buttonCallback,FALLING);
 
@@ -991,12 +959,12 @@ void setup() {
 }
 void loop (){
 
-  buttonstate = digitalRead(button);
+  buttonstate = digitalRead(button);//enter
   button3state = digitalRead(button3);//back
   button1state = digitalRead(button1);//left
   button2state = digitalRead(button2);//right
   button4state = digitalRead(button4);//next
-
+  // enter vao manhinh_main
   if(buttonstate == 0 && button_pressed == false && currentScreen == 1)
   {
     chooseScreen1=1;
@@ -1008,21 +976,29 @@ void loop (){
   if(buttonstate == 1){
     button_pressed = false;
   }
-
-  if(currentScreen == 2 && button2state ==0){//phai
+  // manhinh_main (qua phai)
+  if(currentScreen == 2 && button2state ==0 && button2_pressed == false){
     chooseScreen1++;
     if(chooseScreen1 == 3 )
       chooseScreen1 = 1;
     delay(100);   
     manhinh_main();
+    button2_pressed = true;
   }
-
-  if(currentScreen == 2 && button1state ==0){//trai
+  if(button2state == 1){
+    button2_pressed = false;
+  }
+  // manhinh_main (qua trai)
+  if(currentScreen == 2 && button1state ==0 && button1_pressed == false){
     chooseScreen1--;
     if(chooseScreen1 == 0)
       chooseScreen1 = 2;
     delay(100); 
     manhinh_main();
+    button1_pressed = true;
+  }
+  if(button1state == 1){
+    button1_pressed = false;
   }
 //enter vao default
 if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseScreen1 == 1)
@@ -1036,9 +1012,7 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
       currentScreen = currentScreen + 2;
       delay(100);
       manhinh_default(chooseScreen2_2);
-    
     button_pressed = true;
-
   }
   if(buttonstate == 1){
     button_pressed = false;
@@ -1046,22 +1020,30 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
 
 //man hinh default
   // qua phai
-  if(currentScreen == 4 && button2state ==0 && chooseScreen1 == 1 && flag3 == 2){
+  if(currentScreen == 4 && button2state ==0 && chooseScreen1 == 1 && flag3 == 2 && button2_pressed == false){
     chooseScreen2_2++;
     if(chooseScreen2_2 == 6 )
       chooseScreen2_2 = 1;
     Serial.println(chooseScreen2_2);
     delay(100);   
     manhinh_default(chooseScreen2_2);
+    button2_pressed = true;
+  }
+  if(button2state == 1){
+    button2_pressed = false;
   }
   // qua trai
-  if(currentScreen == 4 && button1state ==0 && chooseScreen1 == 1 && flag3 == 2){
+  if(currentScreen == 4 && button1state ==0 && chooseScreen1 == 1 && flag3 == 2 && button1_pressed == false){
     chooseScreen2_2--;
     if(chooseScreen2_2 == 0)
       chooseScreen2_2 = 5;
     Serial.println(chooseScreen2_2);
      delay(100); 
     manhinh_default(chooseScreen2_2);
+    button1_pressed = true;
+  }
+  if(button1state == 1){
+    button1_pressed = false;
   }
 // chon chuc nang man hinh default
   if(currentScreen == 4 && chooseScreen2_2 >= 1 && chooseScreen2_2 <=5 && buttonstate == 0 && button_pressed == false && flag3 == 2){
@@ -1170,7 +1152,7 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
       }
       delay(100);
       manhinh_default(chooseScreen2_2);
-      button_pressed == true;
+      button_pressed = true;
   }
   if(buttonstate == 1){
     button_pressed = false;
@@ -1184,33 +1166,37 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
       currentScreen++;
       delay(100);
       manhinh_custom(chooseScreen2);
-    
     button_pressed = true;
-
   }
   if(buttonstate == 1){
     button_pressed = false;
   }
-
-
   //man hinh custom
-  // qua phai
-  if(currentScreen == 3 && button2state ==0 && chooseScreen1 == 2){
+    // qua phai
+  if(currentScreen == 3 && button2state ==0 && chooseScreen1 == 2 && button2_pressed == false){
     chooseScreen2++;
     if(chooseScreen2 == 4 )
       chooseScreen2 = 1;
     Serial.println(chooseScreen2);
     delay(100);   
     manhinh_custom(chooseScreen2);
+    button2_pressed = true;
   }
-  // qua trai
-  if(currentScreen == 3 && button1state ==0 && chooseScreen1 == 2){
+  if(button2state == 1){
+    button2_pressed = false;
+  }
+    // qua trai
+  if(currentScreen == 3 && button1state ==0 && chooseScreen1 == 2 && button1_pressed == false){
     chooseScreen2--;
     if(chooseScreen2 == 0)
       chooseScreen2 = 3;
     Serial.println(chooseScreen2);
      delay(100); 
     manhinh_custom(chooseScreen2);
+    button1_pressed = true;
+  }
+  if(button1state == 1){
+    button1_pressed = false;
   }
   // vao man hinh tay phai, tay trai (manhinh_hand)
   if(buttonstate == 0 && button_pressed == false && currentScreen == 3 && (chooseScreen2 == 1 || chooseScreen2 == 2)){
@@ -1240,8 +1226,8 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
     button_pressed = false;
   }
 
-//man hinh 3
-  if(currentScreen == 4 && button2state ==0 && flag1 == 2 ){//phai
+//man hinh tay phai, tay trai (manhinh_hand)
+  if(currentScreen == 4 && button2state ==0 && flag1 == 2 && button2_pressed == false){//phai
     chooseScreen3_1++;
     if(chooseScreen3_1 == 7 ){
       chooseScreen3_1 = 1;
@@ -1249,17 +1235,25 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
     Serial.println(chooseScreen3_1); 
      delay(100); 
     manhinh_hand(chooseScreen2);
+    button2_pressed = true;
+  }
+  if(button2state == 1){
+    button2_pressed = false;
   }
 
-  if(currentScreen == 4 && button1state ==0 && flag1 == 2){//TRAI
+  if(currentScreen == 4 && button1state ==0 && flag1 == 2 && button1_pressed == false){//TRAI
     chooseScreen3_1--;
     if(chooseScreen3_1 == 0)
       chooseScreen3_1 = 6;
     Serial.println(chooseScreen3_1);
      delay(100); 
     manhinh_hand(chooseScreen2);
+    button1_pressed = true;
   }
-
+  if(button1state == 1){
+    button1_pressed = false;
+  }
+  // chon chuc nang man hinh hand
   if(currentScreen == 4 && chooseScreen3_1 >= 1 && chooseScreen3_1 <=6 && buttonstate == 0 && button_pressed == false && flag1 == 2){
       if(chooseScreen2 == 1){  
         if(chooseScreen3_1 <=5){
@@ -1324,22 +1318,31 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
     button_pressed = false;
   }
 // manhinh_time
-if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
+if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0 && button2_pressed == false){//phai
     chooseScreen3_2++;
     if(chooseScreen3_2 == 8 ){
       chooseScreen3_2 = 1;
     }
      delay(100); 
     manhinh_time();
-  }
-  if(currentScreen == 4 && button1state ==0 && flag2 == 2 && a == 0){//TRAI
+    button2_pressed = true;
+}
+if(button2state == 1){
+    button2_pressed = false;
+}
+
+if(currentScreen == 4 && button1state ==0 && flag2 == 2 && a == 0 && button1_pressed == false){//TRAI
     chooseScreen3_2--;
     if(chooseScreen3_2 == 0)
       chooseScreen3_2 = 7;
      delay(100); 
     manhinh_time();
-  }
-
+    button1_pressed = true;
+}
+if(button1state == 1){
+  button1_pressed = false;
+}
+// chon chuc nang man hinh time
   if(currentScreen == 4 && chooseScreen3_2 >= 1 && chooseScreen3_2 <=7 && buttonstate == 0 && button_pressed == false && flag2 == 2){
     if (chooseScreen3_2==3){
       m = 00;
@@ -1492,6 +1495,7 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
         break;
     }
   }
+  // back ve man hinh custom
   if(button3state == 0 && currentScreen == 4 && flag2 == 2){
       delay(100);
       chooseScreen2 = 1;
@@ -1500,13 +1504,14 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       manhinh_custom(chooseScreen2);
       currentScreen--;
   }
+  // back ve man hinh main
   if(button3state == 0 && currentScreen == 4 && flag3 == 2){
       delay(100);
       chooseScreen2_2 = 1;
       manhinh_main();
       currentScreen = currentScreen - 2;;
   }
-
+  // back ve man hinh time tu man hinh dang tap
   if(button3state == 0 && currentScreen == 5 && flag2 == 2){
       for(int i=0; i<=3; i++)
       {
@@ -1522,8 +1527,14 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       manhinh_time();
       currentScreen--;
   }
-
+  // back ve man hinh default tu man hinh dang tap
   if(button3state == 0 && currentScreen == 5 && flag3 == 2){
+      for(int i=0; i<=4; i++)
+      {
+        thoigian.timedefault[i].state = OFF;
+      }
+      m = 00;
+      s = 00;
       chooseScreen2_2 = 1;
       delay(100);
       manhinh_default(chooseScreen2_2);
@@ -1639,6 +1650,7 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
       }
       last = millis();
     }
+
     if(millis()-last2>=4000){
         for(int i=0; i<=4; i++){
           if(person.left_hand.fingers[i].state == ACTIVE){
