@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#define CF_S24  &Satisfy_24
+// #define CF_S24  &Satisfy_24
 #include "PCF8575.h"
 
 PCF8575 pcf8575(0x27);
@@ -23,20 +23,20 @@ TFT_eSPI tft = TFT_eSPI();
 #include "reset.h"
 #include "nenchucmung.h"
 #include "nenmain.h"
- const int button = 34; //TEST
-// const int button = 36;
+//  const int button = 34; //TEST
+const int button = 36;
 int buttonstate = HIGH;
-const int button1 = 35; //TEST
-// const int button1 = 39;
+// const int button1 = 35; //TEST
+const int button1 = 39;
 int button1state = HIGH;
-const int button2 = 32; //TEST
-// const int button2 = 34;
+// const int button2 = 32; //TEST
+const int button2 = 34;     
 int button2state = HIGH;
-const int button3 = 33; //TEST
-// const int button3 = 35;
+// const int button3 = 33; //TEST
+const int button3 = 35;
 int button3state = HIGH;
-const int button4 = 25; //TEST
-// const int button4 = 32;
+// const int button4 = 25; //TEST
+const int button4 = 32;
 int button4state = HIGH;
 const int van = 22;
 const int van1 = 21;
@@ -45,7 +45,7 @@ const int van3 = 17;
 const int van4 = 16;
 const int van5 = 26;
 const int van6 = 27;
-const int dongco_L = 13;
+const int dongco_L = 14;
 const int dongco_R = 12;
 bool dongco_L_state;
 bool dongco_R_state;
@@ -216,6 +216,8 @@ void IRAM_ATTR buttonCallback(){
             Serial.println("stop dong co tay trai");
             break;
           }
+        }
+        for(int i=0; i<=4; i++){
           if(person.right_hand.fingers[i].state == ACTIVE){
             dongco_R_state = !dongco_R_state;
             digitalWrite(dongco_R, dongco_R_state);
@@ -237,6 +239,8 @@ void IRAM_ATTR buttonCallback(){
             Serial.println("chay dong co tay trai");
             break;
           }
+        }
+        for(int i=0; i<=4; i++){
           if(person.right_hand.fingers[i].state == ACTIVE){
             dongco_R_state = !dongco_R_state;
             digitalWrite(dongco_R, dongco_R_state);
@@ -286,6 +290,37 @@ void manhinh_main(){
   int downArrowX = 10;
   int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
+
+  pcf8575.digitalWrite(P0, HIGH);
+  pcf8575.digitalWrite(P1, HIGH);
+  pcf8575.digitalWrite(P2, HIGH);
+  pcf8575.digitalWrite(P3, HIGH);
+  pcf8575.digitalWrite(P4, HIGH);
+  pcf8575.digitalWrite(P5, HIGH);
+  pcf8575.digitalWrite(P6, HIGH);
+
+  pcf8575.digitalWrite(P9, HIGH);
+  pcf8575.digitalWrite(P10, HIGH);
+  pcf8575.digitalWrite(P11, HIGH);
+  pcf8575.digitalWrite(P12, HIGH);
+  pcf8575.digitalWrite(P13, HIGH);
+  pcf8575.digitalWrite(P14, HIGH);
+  pcf8575.digitalWrite(P15, HIGH);
+
+  for(int i=0; i<=4; i++){
+    person.left_hand.fingers[i].state = INACTIVE;
+    person.right_hand.fingers[i].state = INACTIVE;
+    thoigian.timedefault[i].state = OFF;
+  }
+  for(int i=0; i<=3; i++)
+  {
+    thoigian.phutgiay2[i].state = OFF;
+  }
+  for(int i=0; i<=1; i++)
+  {
+    thoigian.phutgiay[i].state = OFF;
+  }
+
 }
 
 void manhinh_default(int chooseScreen2_2){
@@ -864,13 +899,45 @@ void manhinh_timing(){
 
 void manhinh_congra(){
   drawArrayJpeg(nenchucmung, sizeof(nenchucmung), 0, 0); // Draw a jpeg image stored in memory at x,y
-        digitalWrite(van, LOW);
-        digitalWrite(van1, LOW);
-        digitalWrite(van2, LOW);
-        digitalWrite(van3, LOW);
-        digitalWrite(van4, LOW);
-        digitalWrite(van5, LOW);
-        digitalWrite(van6, LOW);
+
+        // digitalWrite(van, LOW);
+        // digitalWrite(van1, LOW);
+        // digitalWrite(van2, LOW);
+        // digitalWrite(van3, LOW);
+        // digitalWrite(van4, LOW);
+        // digitalWrite(van5, LOW);
+        // digitalWrite(van6, LOW);
+  pcf8575.digitalWrite(P0, HIGH);
+  pcf8575.digitalWrite(P1, HIGH);
+  pcf8575.digitalWrite(P2, HIGH);
+  pcf8575.digitalWrite(P3, HIGH);
+  pcf8575.digitalWrite(P4, HIGH);
+  pcf8575.digitalWrite(P5, HIGH);
+  pcf8575.digitalWrite(P6, HIGH);
+
+  pcf8575.digitalWrite(P9, HIGH);
+  pcf8575.digitalWrite(P10, HIGH);
+  pcf8575.digitalWrite(P11, HIGH);
+  pcf8575.digitalWrite(P12, HIGH);
+  pcf8575.digitalWrite(P13, HIGH);
+  pcf8575.digitalWrite(P14, HIGH);
+  pcf8575.digitalWrite(P15, HIGH);
+
+for(int i=0; i<=4; i++){
+  person.left_hand.fingers[i].state = INACTIVE;
+  person.right_hand.fingers[i].state = INACTIVE;
+  thoigian.timedefault[i].state = OFF;
+}
+for(int i=0; i<=3; i++)
+{
+  thoigian.phutgiay2[i].state = OFF;
+}
+for(int i=0; i<=1; i++)
+{
+  thoigian.phutgiay[i].state = OFF;
+}
+
+
   int downArrowX = 10;
   int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
@@ -1010,6 +1077,11 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
           thoigian.timedefault[2].state = OFF;
           thoigian.timedefault[3].state = OFF;
           thoigian.timedefault[4].state = OFF;
+          person.left_hand.fingers[0].state = ACTIVE;
+          person.left_hand.fingers[1].state = ACTIVE;
+          person.left_hand.fingers[2].state = ACTIVE;
+          person.left_hand.fingers[3].state = ACTIVE;
+          person.left_hand.fingers[4].state = ACTIVE;
           m=10;
           s=00;
         }
@@ -1026,6 +1098,11 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
           thoigian.timedefault[2].state = OFF;
           thoigian.timedefault[3].state = OFF;
           thoigian.timedefault[4].state = OFF;
+          person.right_hand.fingers[0].state = ACTIVE;
+          person.right_hand.fingers[1].state = ACTIVE;
+          person.right_hand.fingers[2].state = ACTIVE;
+          person.right_hand.fingers[3].state = ACTIVE;
+          person.right_hand.fingers[4].state = ACTIVE;
           m=10;
           s=00; 
         }
@@ -1042,6 +1119,19 @@ if(buttonstate == 0 && button_pressed == false && currentScreen == 2 && chooseSc
           thoigian.timedefault[2].state = ON;
           thoigian.timedefault[3].state = OFF;
           thoigian.timedefault[4].state = OFF;
+
+          person.left_hand.fingers[0].state = ACTIVE;
+          person.left_hand.fingers[1].state = ACTIVE;
+          person.left_hand.fingers[2].state = ACTIVE;
+          person.left_hand.fingers[3].state = ACTIVE;
+          person.left_hand.fingers[4].state = ACTIVE;
+
+          person.right_hand.fingers[0].state = ACTIVE;
+          person.right_hand.fingers[1].state = ACTIVE;
+          person.right_hand.fingers[2].state = ACTIVE;
+          person.right_hand.fingers[3].state = ACTIVE;
+          person.right_hand.fingers[4].state = ACTIVE;
+
           m=15;
           s=00; 
         }
@@ -1418,6 +1508,16 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
   }
 
   if(button3state == 0 && currentScreen == 5 && flag2 == 2){
+      for(int i=0; i<=3; i++)
+      {
+        thoigian.phutgiay2[i].state = OFF;
+      }
+      for(int i=0; i<=1; i++)
+      {
+        thoigian.phutgiay[i].state = OFF;
+        m = 00;
+        s = 00;
+      }
       delay(100);
       manhinh_time();
       currentScreen--;
@@ -1444,7 +1544,7 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
     manhinh_timing();
     currentScreen++;
     buttonpress = 0;
-
+    
     for(int i = 0; i<=4; i++){
       if(person.left_hand.fingers[i].state == ACTIVE) {
         van_L_state = LOW;
@@ -1477,7 +1577,8 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
         Serial.println("chay dong co tay trai");
         break;
       }
-
+    }
+    for(int i = 0; i<=4; i++){
       if(person.right_hand.fingers[i].state == ACTIVE) {
         van_R_state = LOW;
         van6_R_state = HIGH;
@@ -1546,16 +1647,18 @@ if(currentScreen == 4 && button2state ==0 && flag2 == 2 && a == 0){//phai
 
             van6_L_state = !van6_L_state;
             pcf8575.digitalWrite(P6, van6_L_state);
-            Serial.println("swap tay trai");
+            Serial.println("co bop tay trai");
             break;
           }
+        }
+        for(int i=0; i<=4; i++){
           if(person.right_hand.fingers[i].state == ACTIVE){
             van_R_state = !van_R_state;
             pcf8575.digitalWrite(P9, van_R_state);
 
             van6_R_state = !van6_R_state;
             pcf8575.digitalWrite(P15, van6_R_state);
-            Serial.println("swap tay phai");
+            Serial.println("co bop tay phai");
             break;
           }
         }
