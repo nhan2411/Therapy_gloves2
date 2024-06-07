@@ -67,10 +67,12 @@ int last3 ;
 int last4 ;
 int last5 ;
 int last6 ;
+int last7 ;
 int buttonpress = 1;
 int count_L = 0;
 int count_R = 0;
-
+int count_L_temp = 0;
+int count_R_temp = 0;
 typedef enum {
     ON,
     OFF
@@ -200,7 +202,7 @@ void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int
 
 void IRAM_ATTR buttonCallback(){
   if(currentScreen == 5){
-    if(millis()-last>=200){
+    if(millis()-last>=300){
       if (buttonpress == 0){
         buttonpress = 1;
         for(int i=0; i<=4; i++){
@@ -1634,6 +1636,7 @@ if(button1state == 1){
     currentScreen++;
     buttonpress = 0;
     if(thoigian.timedefault[4].state == ON){
+        count_R = 0;
         van_R_state = HIGH;
         van6_R_state = LOW;
         dongco_R_state = HIGH;
@@ -1643,6 +1646,7 @@ if(button1state == 1){
         Serial.println("chay dong co tay PHAI");
     }
     if(thoigian.timedefault[3].state == ON){
+        count_L = 0;
         van_L_state = HIGH;
         van6_L_state = LOW;
         dongco_L_state = HIGH;
@@ -1666,11 +1670,11 @@ if(button1state == 1){
         pcf8575.digitalWrite(P6, HIGH);
 
         if(person.left_hand.fingers[0].state == ACTIVE){
-          pcf8575.digitalWrite(P4, LOW);             
+          pcf8575.digitalWrite(P1, LOW);             
           Serial.println("van1_L");
         }
         if(person.left_hand.fingers[1].state == ACTIVE){
-          pcf8575.digitalWrite(P6, LOW); 
+          pcf8575.digitalWrite(P2, LOW); 
           Serial.println("van2_L");
         }
         if(person.left_hand.fingers[2].state == ACTIVE){
@@ -1678,11 +1682,11 @@ if(button1state == 1){
           Serial.println("van3_L");
         }
         if(person.left_hand.fingers[3].state == ACTIVE){
-          pcf8575.digitalWrite(P1, LOW); 
+          pcf8575.digitalWrite(P6, LOW); 
           Serial.println("van4_L");
         }
         if(person.left_hand.fingers[4].state == ACTIVE){
-          pcf8575.digitalWrite(P2, LOW); 
+          pcf8575.digitalWrite(P4, LOW); 
           Serial.println("van5_L");
         }
         digitalWrite(dongco_L, dongco_L_state);
@@ -1705,11 +1709,11 @@ if(button1state == 1){
         pcf8575.digitalWrite(P15, HIGH);
 
         if(person.right_hand.fingers[0].state == ACTIVE){
-          pcf8575.digitalWrite(P9, LOW);             
+          pcf8575.digitalWrite(P14, LOW);             
           Serial.println("van1_R");
         }
         if(person.right_hand.fingers[1].state == ACTIVE){
-          pcf8575.digitalWrite(P11, LOW); 
+          pcf8575.digitalWrite(P13, LOW); 
           Serial.println("van2_R");
         }
         if(person.right_hand.fingers[2].state == ACTIVE){
@@ -1717,11 +1721,11 @@ if(button1state == 1){
           Serial.println("van3_R");
         }
         if(person.right_hand.fingers[3].state == ACTIVE){
-          pcf8575.digitalWrite(P13, LOW); 
+          pcf8575.digitalWrite(P11, LOW); 
           Serial.println("van4_R");
         }
         if(person.right_hand.fingers[4].state == ACTIVE){
-          pcf8575.digitalWrite(P14, LOW); 
+          pcf8575.digitalWrite(P9, LOW); 
           Serial.println("van5_R");
         }
         digitalWrite(dongco_R, dongco_R_state);
@@ -1733,7 +1737,7 @@ if(button1state == 1){
 
 // manhinh_timing
   if(buttonpress == 0 && currentScreen == 5){
-    if(millis()-last>=900){
+    if(millis()-last7>=900){
       tft.fillRoundRect(90, 60, 60, 35, 7.5, 0x053b50); 
       tft.setCursor(108,70);
       tft.setTextColor(TFT_WHITE);
@@ -1755,7 +1759,7 @@ if(button1state == 1){
         s=59;
         m--;
       }
-      last = millis();
+      last7 = millis();
     }
     if(thoigian.timedefault[4].state == ON){
       if(millis()-last3>=1500){
@@ -1768,7 +1772,7 @@ if(button1state == 1){
           pcf8575.digitalWrite(P12, HIGH);
           pcf8575.digitalWrite(P13, HIGH);
           pcf8575.digitalWrite(P9, HIGH);
-          Serial.println("van1");
+          Serial.println("van1-R");
         }
         if(count_R == 2){
           pcf8575.digitalWrite(P13, LOW);
@@ -1776,7 +1780,7 @@ if(button1state == 1){
           pcf8575.digitalWrite(P11, HIGH);
           pcf8575.digitalWrite(P14, HIGH);
           pcf8575.digitalWrite(P9, HIGH);
-          Serial.println("van2");
+          Serial.println("van2-R");
         }
         if(count_R == 3){
           pcf8575.digitalWrite(P12, LOW);
@@ -1784,7 +1788,7 @@ if(button1state == 1){
           pcf8575.digitalWrite(P13, HIGH);
           pcf8575.digitalWrite(P14, HIGH);
           pcf8575.digitalWrite(P9, HIGH);
-          Serial.println("van3");
+          Serial.println("van3-R");
         }
         if(count_R == 4){
           pcf8575.digitalWrite(P11, LOW);
@@ -1792,7 +1796,7 @@ if(button1state == 1){
           pcf8575.digitalWrite(P12, HIGH);
           pcf8575.digitalWrite(P14, HIGH);
           pcf8575.digitalWrite(P9, HIGH);
-          Serial.println("van4");
+          Serial.println("van4-R");
         }
         if(count_R == 5){
           pcf8575.digitalWrite(P9, LOW);
@@ -1800,7 +1804,7 @@ if(button1state == 1){
           pcf8575.digitalWrite(P12, HIGH);
           pcf8575.digitalWrite(P13, HIGH);
           pcf8575.digitalWrite(P14, HIGH);
-          Serial.println("van5");
+          Serial.println("van5-R");
         }
         Serial.println(count_R);
         last3 = millis();
@@ -1815,50 +1819,50 @@ if(button1state == 1){
         last4 = millis();
       }
     }
-    if(thoigian.timedefault[4].state == ON){
+    if(thoigian.timedefault[3].state == ON){
           if(millis()-last5>=1500){
             count_L++;
             if(count_L == 6)
               count_L = 1;
             if(count_L == 1){
-              pcf8575.digitalWrite(P9, LOW);
-              pcf8575.digitalWrite(P11, HIGH);
-              pcf8575.digitalWrite(P12, HIGH);
-              pcf8575.digitalWrite(P13, HIGH);
-              pcf8575.digitalWrite(P14, HIGH);
-              Serial.println("van1");
+              pcf8575.digitalWrite(P1, LOW);
+              pcf8575.digitalWrite(P2, HIGH);
+              pcf8575.digitalWrite(P3, HIGH);
+              pcf8575.digitalWrite(P4, HIGH);
+              pcf8575.digitalWrite(P6, HIGH);
+              Serial.println("van1-L");
             }
             if(count_L == 2){
-              pcf8575.digitalWrite(P11, LOW);
-              pcf8575.digitalWrite(P12, HIGH);
-              pcf8575.digitalWrite(P13, HIGH);
-              pcf8575.digitalWrite(P14, HIGH);
-              pcf8575.digitalWrite(P9, HIGH);
-              Serial.println("van2");
+              pcf8575.digitalWrite(P2, LOW);
+              pcf8575.digitalWrite(P1, HIGH);
+              pcf8575.digitalWrite(P3, HIGH);
+              pcf8575.digitalWrite(P4, HIGH);
+              pcf8575.digitalWrite(P6, HIGH);
+              Serial.println("van2-L");
             }
             if(count_L == 3){
-              pcf8575.digitalWrite(P12, LOW);
-              pcf8575.digitalWrite(P11, HIGH);
-              pcf8575.digitalWrite(P13, HIGH);
+              pcf8575.digitalWrite(P3, LOW);
+              pcf8575.digitalWrite(P1, HIGH);
+              pcf8575.digitalWrite(P2, HIGH);
               pcf8575.digitalWrite(P14, HIGH);
-              pcf8575.digitalWrite(P9, HIGH);
-              Serial.println("van3");
+              pcf8575.digitalWrite(P6, HIGH);
+              Serial.println("van3-L");
             }
             if(count_L == 4){
-              pcf8575.digitalWrite(P13, LOW);
-              pcf8575.digitalWrite(P11, HIGH);
-              pcf8575.digitalWrite(P12, HIGH);
-              pcf8575.digitalWrite(P14, HIGH);
-              pcf8575.digitalWrite(P9, HIGH);
-              Serial.println("van4");
+              pcf8575.digitalWrite(P6, LOW);
+              pcf8575.digitalWrite(P1, HIGH);
+              pcf8575.digitalWrite(P2, HIGH);
+              pcf8575.digitalWrite(P3, HIGH);
+              pcf8575.digitalWrite(P4, HIGH);
+              Serial.println("van4-L");
             }
             if(count_L == 5){
-              pcf8575.digitalWrite(P14, LOW);
-              pcf8575.digitalWrite(P11, HIGH);
-              pcf8575.digitalWrite(P12, HIGH);
-              pcf8575.digitalWrite(P13, HIGH);
-              pcf8575.digitalWrite(P9, HIGH);
-              Serial.println("van5");
+              pcf8575.digitalWrite(P4, LOW);
+              pcf8575.digitalWrite(P1, HIGH);
+              pcf8575.digitalWrite(P2, HIGH);
+              pcf8575.digitalWrite(P3, HIGH);
+              pcf8575.digitalWrite(P6, HIGH);
+              Serial.println("van5-L");
             }
             Serial.println(count_L);
             last5 = millis();
