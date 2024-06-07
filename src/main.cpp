@@ -63,8 +63,13 @@ int s = 00;
 int a = 0;
 int last ;
 int last2 ;
+int last3 ;
+int last4 ;
+int last5 ;
+int last6 ;
 int buttonpress = 1;
-int asd = 0;
+int count_L = 0;
+int count_R = 0;
 
 typedef enum {
     ON,
@@ -206,6 +211,7 @@ void IRAM_ATTR buttonCallback(){
             break;
           }
         }
+
         for(int i=0; i<=4; i++){
           if(person.right_hand.fingers[i].state == ACTIVE){
             dongco_R_state = !dongco_R_state;
@@ -214,6 +220,21 @@ void IRAM_ATTR buttonCallback(){
             break;
           }
         }
+
+        if (thoigian.timedefault[4].state == ON)
+        {
+          dongco_R_state = !dongco_R_state;
+          digitalWrite(dongco_R, dongco_R_state);
+          Serial.println("stop dong co tay phai");
+        }
+
+        if (thoigian.timedefault[3].state == ON)
+        {
+          dongco_L_state = !dongco_L_state;
+          digitalWrite(dongco_L, dongco_L_state);
+          Serial.println("stop dong co tay trai");
+        }
+        
         int downArrowX1 = 206;
         int downArrowY1 = 185;
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
@@ -237,6 +258,20 @@ void IRAM_ATTR buttonCallback(){
             break;
           }
         }
+        if (thoigian.timedefault[4].state == ON)
+        {
+          dongco_R_state = !dongco_R_state;
+          digitalWrite(dongco_R, dongco_R_state);
+          Serial.println("stop dong co tay phai");
+        }
+
+        if (thoigian.timedefault[3].state == ON)
+        {
+          dongco_L_state = !dongco_L_state;
+          digitalWrite(dongco_L, dongco_L_state);
+          Serial.println("stop dong co tay trai");
+        }
+
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
         tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
         tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
@@ -849,6 +884,7 @@ void manhinh_time() {
   tft.fillCircle(162, 215, 17, 0x053b50);
   tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
 
+
 }
 
 void manhinh_timing(){
@@ -883,6 +919,20 @@ void manhinh_timing(){
 void manhinh_congra(){
   drawArrayJpeg(nenchucmung, sizeof(nenchucmung), 0, 0); // Draw a jpeg image stored in memory at x,y
 
+  for(int i=0; i<=4; i++){
+    person.left_hand.fingers[i].state = INACTIVE;
+    person.right_hand.fingers[i].state = INACTIVE;
+    thoigian.timedefault[i].state = OFF;
+  }
+  for(int i=0; i<=3; i++)
+  {
+    thoigian.phutgiay2[i].state = OFF;
+  }
+  for(int i=0; i<=1; i++)
+  {
+    thoigian.phutgiay[i].state = OFF;
+  }
+  delay(4000);
   pcf8575.digitalWrite(P0, HIGH);
   pcf8575.digitalWrite(P1, HIGH);
   pcf8575.digitalWrite(P2, HIGH);
@@ -898,21 +948,6 @@ void manhinh_congra(){
   pcf8575.digitalWrite(P13, HIGH);
   pcf8575.digitalWrite(P14, HIGH);
   pcf8575.digitalWrite(P15, HIGH);
-
-for(int i=0; i<=4; i++){
-  person.left_hand.fingers[i].state = INACTIVE;
-  person.right_hand.fingers[i].state = INACTIVE;
-  thoigian.timedefault[i].state = OFF;
-}
-for(int i=0; i<=3; i++)
-{
-  thoigian.phutgiay2[i].state = OFF;
-}
-for(int i=0; i<=1; i++)
-{
-  thoigian.phutgiay[i].state = OFF;
-}
-
   int downArrowX = 10;
   int downArrowY = 20;
   tft.fillTriangle(downArrowX , downArrowY , downArrowX + 20, downArrowY - 12, downArrowX + 20, downArrowY + 12, 0x053b50);
@@ -1479,40 +1514,74 @@ if(button1state == 1){
   }
 
   //back
-  if(button3state == 0){
-    switch (currentScreen) {
-      case 2:
-        delay(100); 
-        manhinh();
-        currentScreen--;
-        break;
-      case 3:
-        delay(100);
-        manhinh_main();
-        currentScreen--;
-        break;
-      default:
-        break;
-    }
+  // if(button3state == 0){
+  //   switch (currentScreen) {
+  //     case 2:
+  //       delay(100); 
+  //       manhinh();
+  //       currentScreen--;
+  //       break;
+  //     case 3:
+  //       delay(100);
+  //       manhinh_main();
+  //       currentScreen--;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+  //back ve man hinh
+  if(button3state == 0 && currentScreen == 2 && button3_pressed == false)
+  {
+    delay(100); 
+    manhinh();
+    currentScreen--;
+    button3_pressed = true;
+  }  
+  if(button3state == 1){
+    button3_pressed = false;
   }
+
+  //back ve man hinh main
+  if(button3state == 0 && currentScreen == 3 && button3_pressed == false)
+  {
+    delay(100); 
+    manhinh_main();
+    currentScreen--;
+    button3_pressed = true;
+  }  
+  if(button3state == 1){
+    button3_pressed = false;
+  }
+
   // back ve man hinh custom
-  if(button3state == 0 && currentScreen == 4 && flag2 == 2){
+  if(button3state == 0 && currentScreen == 4 && flag2 == 2 && button3_pressed == false){
       delay(100);
       chooseScreen2 = 1;
       chooseScreen3_1 = 1;
       chooseScreen3_2 = 1;
       manhinh_custom(chooseScreen2);
       currentScreen--;
+      button3_pressed = true;
   }
+  if(button3state == 1){
+    button3_pressed = false;
+  }
+
   // back ve man hinh main
-  if(button3state == 0 && currentScreen == 4 && flag3 == 2){
+  if(button3state == 0 && currentScreen == 4 && flag3 == 2 && button3_pressed == false){
       delay(100);
       chooseScreen2_2 = 1;
       manhinh_main();
       currentScreen = currentScreen - 2;;
+      button3_pressed = true;
   }
+  if(button3state == 1){
+    button3_pressed = false;
+  } 
+
   // back ve man hinh time tu man hinh dang tap
-  if(button3state == 0 && currentScreen == 5 && flag2 == 2){
+  if(button3state == 0 && currentScreen == 5 && flag2 == 2 && button3_pressed == false){
       for(int i=0; i<=3; i++)
       {
         thoigian.phutgiay2[i].state = OFF;
@@ -1526,9 +1595,13 @@ if(button1state == 1){
       delay(100);
       manhinh_time();
       currentScreen--;
+      button3_pressed = true;
+  }
+  if(button3state == 1){
+    button3_pressed = false;
   }
   // back ve man hinh default tu man hinh dang tap
-  if(button3state == 0 && currentScreen == 5 && flag3 == 2){
+  if(button3state == 0 && currentScreen == 5 && flag3 == 2 && button3_pressed == false){
       for(int i=0; i<=4; i++)
       {
         thoigian.timedefault[i].state = OFF;
@@ -1539,7 +1612,12 @@ if(button1state == 1){
       delay(100);
       manhinh_default(chooseScreen2_2);
       currentScreen--;
+      button3_pressed = true;
   }
+  if(button3state == 1){
+    button3_pressed = false;
+  }
+
   //next
   if(button4state == 0 && currentScreen == 4 && flag1 == 2){
       delay(100);
@@ -1555,21 +1633,44 @@ if(button1state == 1){
     manhinh_timing();
     currentScreen++;
     buttonpress = 0;
-    
-    for(int i = 0; i<=4; i++){
-      if(person.left_hand.fingers[i].state == ACTIVE) {
-        van_L_state = LOW;
-        van6_L_state = HIGH;
+    if(thoigian.timedefault[4].state == ON){
+        van_R_state = HIGH;
+        van6_R_state = LOW;
+        dongco_R_state = HIGH;
+        pcf8575.digitalWrite(P10, van_R_state);
+        pcf8575.digitalWrite(P15, van6_R_state);
+        digitalWrite(dongco_R, dongco_R_state);
+        Serial.println("chay dong co tay PHAI");
+    }
+    if(thoigian.timedefault[3].state == ON){
+        van_L_state = HIGH;
+        van6_L_state = LOW;
         dongco_L_state = HIGH;
         pcf8575.digitalWrite(P0, van_L_state);
-        pcf8575.digitalWrite(P6, van6_L_state);
+        pcf8575.digitalWrite(P5, van6_L_state);
+        digitalWrite(dongco_L, dongco_L_state);
+        Serial.println("chay dong co tay trai");
+    }
+    for(int i = 0; i<=4; i++){
+      if(person.left_hand.fingers[i].state == ACTIVE) {
+        van_L_state = HIGH;
+        van6_L_state = LOW;
+        dongco_L_state = HIGH;
+
+        pcf8575.digitalWrite(P0, HIGH);
+        pcf8575.digitalWrite(P1, HIGH);
+        pcf8575.digitalWrite(P2, HIGH);
+        pcf8575.digitalWrite(P3, HIGH);
+        pcf8575.digitalWrite(P4, HIGH);
+        pcf8575.digitalWrite(P5, HIGH);
+        pcf8575.digitalWrite(P6, HIGH);
 
         if(person.left_hand.fingers[0].state == ACTIVE){
-          pcf8575.digitalWrite(P1, LOW);             
+          pcf8575.digitalWrite(P4, LOW);             
           Serial.println("van1_L");
         }
         if(person.left_hand.fingers[1].state == ACTIVE){
-          pcf8575.digitalWrite(P2, LOW); 
+          pcf8575.digitalWrite(P6, LOW); 
           Serial.println("van2_L");
         }
         if(person.left_hand.fingers[2].state == ACTIVE){
@@ -1577,11 +1678,11 @@ if(button1state == 1){
           Serial.println("van3_L");
         }
         if(person.left_hand.fingers[3].state == ACTIVE){
-          pcf8575.digitalWrite(P4, LOW); 
+          pcf8575.digitalWrite(P1, LOW); 
           Serial.println("van4_L");
         }
         if(person.left_hand.fingers[4].state == ACTIVE){
-          pcf8575.digitalWrite(P5, LOW); 
+          pcf8575.digitalWrite(P2, LOW); 
           Serial.println("van5_L");
         }
         digitalWrite(dongco_L, dongco_L_state);
@@ -1591,14 +1692,20 @@ if(button1state == 1){
     }
     for(int i = 0; i<=4; i++){
       if(person.right_hand.fingers[i].state == ACTIVE) {
-        van_R_state = LOW;
-        van6_R_state = HIGH;
+        van_R_state = HIGH;
+        van6_R_state = LOW;
         dongco_R_state = HIGH;
-        pcf8575.digitalWrite(P9, van_R_state);
-        pcf8575.digitalWrite(P15, van6_R_state);
+
+        pcf8575.digitalWrite(P9, HIGH);
+        pcf8575.digitalWrite(P10, HIGH);
+        pcf8575.digitalWrite(P11, HIGH);
+        pcf8575.digitalWrite(P12, HIGH);
+        pcf8575.digitalWrite(P13, HIGH);
+        pcf8575.digitalWrite(P14, HIGH);
+        pcf8575.digitalWrite(P15, HIGH);
 
         if(person.right_hand.fingers[0].state == ACTIVE){
-          pcf8575.digitalWrite(P10, LOW);             
+          pcf8575.digitalWrite(P9, LOW);             
           Serial.println("van1_R");
         }
         if(person.right_hand.fingers[1].state == ACTIVE){
@@ -1650,26 +1757,147 @@ if(button1state == 1){
       }
       last = millis();
     }
+    if(thoigian.timedefault[4].state == ON){
+      if(millis()-last3>=1500){
+        count_R++;
+        if(count_R == 6)
+          count_R = 1;
+        if(count_R == 1){
+          pcf8575.digitalWrite(P14, LOW);
+          pcf8575.digitalWrite(P11, HIGH);
+          pcf8575.digitalWrite(P12, HIGH);
+          pcf8575.digitalWrite(P13, HIGH);
+          pcf8575.digitalWrite(P9, HIGH);
+          Serial.println("van1");
+        }
+        if(count_R == 2){
+          pcf8575.digitalWrite(P13, LOW);
+          pcf8575.digitalWrite(P12, HIGH);
+          pcf8575.digitalWrite(P11, HIGH);
+          pcf8575.digitalWrite(P14, HIGH);
+          pcf8575.digitalWrite(P9, HIGH);
+          Serial.println("van2");
+        }
+        if(count_R == 3){
+          pcf8575.digitalWrite(P12, LOW);
+          pcf8575.digitalWrite(P11, HIGH);
+          pcf8575.digitalWrite(P13, HIGH);
+          pcf8575.digitalWrite(P14, HIGH);
+          pcf8575.digitalWrite(P9, HIGH);
+          Serial.println("van3");
+        }
+        if(count_R == 4){
+          pcf8575.digitalWrite(P11, LOW);
+          pcf8575.digitalWrite(P13, HIGH);
+          pcf8575.digitalWrite(P12, HIGH);
+          pcf8575.digitalWrite(P14, HIGH);
+          pcf8575.digitalWrite(P9, HIGH);
+          Serial.println("van4");
+        }
+        if(count_R == 5){
+          pcf8575.digitalWrite(P9, LOW);
+          pcf8575.digitalWrite(P11, HIGH);
+          pcf8575.digitalWrite(P12, HIGH);
+          pcf8575.digitalWrite(P13, HIGH);
+          pcf8575.digitalWrite(P14, HIGH);
+          Serial.println("van5");
+        }
+        Serial.println(count_R);
+        last3 = millis();
+      }
+      if(millis()-last4>=9000){
+            pcf8575.digitalWrite(P15, van6_R_state);    
+            pcf8575.digitalWrite(P10, van_R_state);
+            van6_R_state = !van6_R_state;
+            van_R_state = !van_R_state;
+            
+            Serial.println("co bop tay phai");
+        last4 = millis();
+      }
+    }
+    if(thoigian.timedefault[4].state == ON){
+          if(millis()-last5>=1500){
+            count_L++;
+            if(count_L == 6)
+              count_L = 1;
+            if(count_L == 1){
+              pcf8575.digitalWrite(P9, LOW);
+              pcf8575.digitalWrite(P11, HIGH);
+              pcf8575.digitalWrite(P12, HIGH);
+              pcf8575.digitalWrite(P13, HIGH);
+              pcf8575.digitalWrite(P14, HIGH);
+              Serial.println("van1");
+            }
+            if(count_L == 2){
+              pcf8575.digitalWrite(P11, LOW);
+              pcf8575.digitalWrite(P12, HIGH);
+              pcf8575.digitalWrite(P13, HIGH);
+              pcf8575.digitalWrite(P14, HIGH);
+              pcf8575.digitalWrite(P9, HIGH);
+              Serial.println("van2");
+            }
+            if(count_L == 3){
+              pcf8575.digitalWrite(P12, LOW);
+              pcf8575.digitalWrite(P11, HIGH);
+              pcf8575.digitalWrite(P13, HIGH);
+              pcf8575.digitalWrite(P14, HIGH);
+              pcf8575.digitalWrite(P9, HIGH);
+              Serial.println("van3");
+            }
+            if(count_L == 4){
+              pcf8575.digitalWrite(P13, LOW);
+              pcf8575.digitalWrite(P11, HIGH);
+              pcf8575.digitalWrite(P12, HIGH);
+              pcf8575.digitalWrite(P14, HIGH);
+              pcf8575.digitalWrite(P9, HIGH);
+              Serial.println("van4");
+            }
+            if(count_L == 5){
+              pcf8575.digitalWrite(P14, LOW);
+              pcf8575.digitalWrite(P11, HIGH);
+              pcf8575.digitalWrite(P12, HIGH);
+              pcf8575.digitalWrite(P13, HIGH);
+              pcf8575.digitalWrite(P9, HIGH);
+              Serial.println("van5");
+            }
+            Serial.println(count_L);
+            last5 = millis();
+          }
+      if(millis()-last6>=9000){
+            pcf8575.digitalWrite(P5, van6_L_state);    
+            pcf8575.digitalWrite(P0, van_L_state);
+            van6_L_state = !van6_L_state;
+            van_L_state = !van_L_state;
+            
+            Serial.println("co bop tay TRAI");
+        last6 = millis();
+      }
+    }
 
     if(millis()-last2>=4000){
         for(int i=0; i<=4; i++){
           if(person.left_hand.fingers[i].state == ACTIVE){
-            van_L_state = !van_L_state;
+               
+            pcf8575.digitalWrite(P5, van6_L_state);
+            Serial.println(van6_L_state);
+            
             pcf8575.digitalWrite(P0, van_L_state);
+            Serial.println(van_L_state);
 
             van6_L_state = !van6_L_state;
-            pcf8575.digitalWrite(P6, van6_L_state);
+            van_L_state = !van_L_state;
             Serial.println("co bop tay trai");
             break;
           }
         }
         for(int i=0; i<=4; i++){
           if(person.right_hand.fingers[i].state == ACTIVE){
-            van_R_state = !van_R_state;
-            pcf8575.digitalWrite(P9, van_R_state);
-
+            
+            pcf8575.digitalWrite(P15, van6_R_state);    
+            pcf8575.digitalWrite(P10, van_R_state);
             van6_R_state = !van6_R_state;
-            pcf8575.digitalWrite(P15, van6_R_state);
+            van_R_state = !van_R_state;
+            
             Serial.println("co bop tay phai");
             break;
           }
