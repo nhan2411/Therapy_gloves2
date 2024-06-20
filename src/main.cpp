@@ -4,6 +4,97 @@
 // #define CF_S24  &Satisfy_24
 #include "PCF8575.h"
 
+// BLE
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+
+#define SERVICE_UUID "e48f8c7f-9b2a-432e-912e-14caa051237a"
+#define CHARACTERISTIC_UUID "45cc01fe-1705-4c3f-bbba-ae5bd83255f7"
+
+BLEServer *pServer = NULL;
+BLECharacteristic *pCharacteristic = NULL;
+bool deviceConnected = false;
+
+static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs);
+void buttonCallback();
+
+
+class MyServerCallbacks : public BLEServerCallbacks
+{
+  void onConnect(BLEServer *pServer)
+  {
+    deviceConnected = true;
+    Serial.println("Connected");
+  };
+
+  void onDisconnect(BLEServer *pServer)
+  {
+    deviceConnected = false;
+    Serial.println("Disconnected");
+    BLEDevice::startAdvertising();
+  }
+};
+
+
+
+class MyCallbacks : public BLECharacteristicCallbacks
+{
+  void onWrite(BLECharacteristic *pCharacteristic)
+  {
+    const char* s = pCharacteristic->getValue().c_str();
+    // std::string value = pCharacteristic->getValue();
+
+    // type@F0L:F1L:F2L:F3L:F4L@F0R:F1R:F2R:F3R:F4R@mins:secs
+
+    // type 
+    // 0: Left Hand
+    // 1: Righ Hand
+    // 2: Both Hand
+    // 3: FbyF L
+    // 4: FbyF R
+    // 5: Custom
+
+    //F0L: 0: InActive | 1: Active
+
+    int type;
+    int leftHand[5];
+    int rightHand[5];
+    int mins;
+    int secs;
+
+    if (strlen(s) > 0)
+    {
+      Serial.printf("Value: %s\n", s);
+      int data[10];
+      // sscanf(s, "%d@%d:%d:%d:%d:%d:%d:%d:%d:%d:%d@%d:%d", &type, &data[0], &data[1], &data[2], &data[3], &data[4], &data[5], &data[6], &data[7], &data[8], &data[9], &mins, &secs);
+
+      sscanf(s, "%d@%d:%d:%d:%d:%d@%d:%d:%d:%d:%d@%d:%d", &type, &leftHand[0], &leftHand[1], &leftHand[2], &leftHand[3], &leftHand[4], &rightHand[0], &rightHand[1], &rightHand[2], &rightHand[3], &rightHand[4], &mins, &secs);
+
+      Serial.printf("type: %d\n", type);
+      //////
+      Serial.printf("leftHand: ");
+      for (size_t i = 0; i < 5; i++)
+      {
+        Serial.printf("%d\t", leftHand[i]);
+      }
+      Serial.println();
+      ////
+      Serial.printf("rightHand: ");
+      for (size_t i = 0; i < 5; i++)
+      {
+        Serial.printf("%d\t", rightHand[i]);
+      }
+      Serial.println();
+      ///
+      Serial.printf("Mins: %d\n", mins);
+      Serial.printf("Secs: %d\n", secs);
+
+      checkTypeBLE(type, leftHand, mins, secs);
+    }
+  }
+};
+
 PCF8575 pcf8575(0x27);
 TFT_eSPI tft = TFT_eSPI();
 
@@ -73,6 +164,7 @@ int count_L = 0;
 int count_R = 0;
 int count_L_temp = 0;
 int count_R_temp = 0;
+bool onBLE = false;
 typedef enum {
     ON,
     OFF
@@ -111,6 +203,163 @@ struct Human {
 };
 
 struct Human person;
+
+static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs) {
+  // type 
+  // 0: Left Hand
+  // 1: Righ Hand
+  // 2: Both Hand
+  // 3: FbyF L
+  // 4: FbyF R
+  // 5: Custom
+
+  //F0L: 0: InActive | 1: Active
+  m = _min;
+  s = _secs;
+  switch (type)
+  {
+    case 0:
+      thoigian.timedefault[0].state = ON;
+      thoigian.timedefault[1].state = OFF;
+      thoigian.timedefault[2].state = OFF;
+      thoigian.timedefault[3].state = OFF;
+      thoigian.timedefault[4].state = OFF;
+
+      person.left_hand.fingers[0].state = ACTIVE;
+      person.left_hand.fingers[1].state = ACTIVE;
+      person.left_hand.fingers[2].state = ACTIVE;
+      person.left_hand.fingers[3].state = ACTIVE;
+      person.left_hand.fingers[4].state = ACTIVE;
+
+      person.right_hand.fingers[0].state = INACTIVE;
+      person.right_hand.fingers[1].state = INACTIVE;
+      person.right_hand.fingers[2].state = INACTIVE;
+      person.right_hand.fingers[3].state = INACTIVE;
+      person.right_hand.fingers[4].state = INACTIVE;
+
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag3 = 2;
+      
+
+      break;
+
+    case 1:
+      thoigian.timedefault[0].state = OFF;
+      thoigian.timedefault[1].state = ON;
+      thoigian.timedefault[2].state = OFF;
+      thoigian.timedefault[3].state = OFF;
+      thoigian.timedefault[4].state = OFF;
+
+      person.left_hand.fingers[0].state = INACTIVE;
+      person.left_hand.fingers[1].state = INACTIVE;
+      person.left_hand.fingers[2].state = INACTIVE;
+      person.left_hand.fingers[3].state = INACTIVE;
+      person.left_hand.fingers[4].state = INACTIVE;
+
+      person.right_hand.fingers[0].state = ACTIVE;
+      person.right_hand.fingers[1].state = ACTIVE;
+      person.right_hand.fingers[2].state = ACTIVE;
+      person.right_hand.fingers[3].state = ACTIVE;
+      person.right_hand.fingers[4].state = ACTIVE;
+
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag3 = 2;
+      break;
+
+    case 2:
+      thoigian.timedefault[0].state = OFF;
+      thoigian.timedefault[1].state = OFF;
+      thoigian.timedefault[2].state = ON;
+      thoigian.timedefault[3].state = OFF;
+      thoigian.timedefault[4].state = OFF;
+
+      person.left_hand.fingers[0].state = ACTIVE;
+      person.left_hand.fingers[1].state = ACTIVE;
+      person.left_hand.fingers[2].state = ACTIVE;
+      person.left_hand.fingers[3].state = ACTIVE;
+      person.left_hand.fingers[4].state = ACTIVE;
+
+      person.right_hand.fingers[0].state = ACTIVE;
+      person.right_hand.fingers[1].state = ACTIVE;
+      person.right_hand.fingers[2].state = ACTIVE;
+      person.right_hand.fingers[3].state = ACTIVE;
+      person.right_hand.fingers[4].state = ACTIVE;
+      
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag3 = 2;
+      break;
+
+    case 3:
+      thoigian.timedefault[0].state = OFF;
+      thoigian.timedefault[1].state = OFF;
+      thoigian.timedefault[2].state = OFF;
+      thoigian.timedefault[3].state = ON;
+      thoigian.timedefault[4].state = OFF;
+
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag3 = 2;
+      break;
+
+    case 4:
+      thoigian.timedefault[0].state = OFF;
+      thoigian.timedefault[1].state = OFF;
+      thoigian.timedefault[2].state = OFF;
+      thoigian.timedefault[3].state = OFF;
+      thoigian.timedefault[4].state = ON;
+
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag3 = 2;
+      break;
+
+    case 5:
+      if(leftHand[0] == 1)
+        person.left_hand.fingers[0].state = ACTIVE;
+      if(leftHand[1] == 1)
+        person.left_hand.fingers[1].state = ACTIVE;
+      if(leftHand[2] == 1)
+        person.left_hand.fingers[2].state = ACTIVE;
+      if(leftHand[3] == 1)
+        person.left_hand.fingers[3].state = ACTIVE;
+      if(leftHand[4] == 1)
+        person.left_hand.fingers[4].state = ACTIVE;
+
+        // person.right_hand.fingers[0].state = ACTIVE;
+        // person.right_hand.fingers[1].state = ACTIVE;
+        // person.right_hand.fingers[2].state = ACTIVE;
+        // person.right_hand.fingers[3].state = ACTIVE;
+        // person.right_hand.fingers[4].state = ACTIVE;
+
+      onBLE = true;
+      button4state = 0;
+      currentScreen = 4;
+      flag2 = 2;
+      break;
+
+    case 255:
+      // thoigian.timedefault[0].state = OFF;
+      // thoigian.timedefault[1].state = OFF;
+      // thoigian.timedefault[2].state = OFF;
+      // thoigian.timedefault[3].state = OFF;
+      // thoigian.timedefault[4].state = ON;
+
+      // currentScreen = 5;
+      buttonCallback();
+      break;
+  
+  default:
+    break;
+  }
+}
 
 void renderJPEG(int xpos, int ypos) {
 
@@ -200,7 +449,9 @@ void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int
   //Serial.println("#########################");
 }
 
-void IRAM_ATTR buttonCallback(){
+void buttonCallback(){
+// void IRAM_ATTR buttonCallback(){
+  // Serial.println("buttonCallback");
   if(currentScreen == 5){
     if(millis()-last>=300){
       if (buttonpress == 0){
@@ -264,14 +515,14 @@ void IRAM_ATTR buttonCallback(){
         {
           dongco_R_state = !dongco_R_state;
           digitalWrite(dongco_R, dongco_R_state);
-          Serial.println("stop dong co tay phai");
+          Serial.println("chay dong co tay phai");
         }
 
         if (thoigian.timedefault[3].state == ON)
         {
           dongco_L_state = !dongco_L_state;
           digitalWrite(dongco_L, dongco_L_state);
-          Serial.println("stop dong co tay trai");
+          Serial.println("chay dong co tay trai");
         }
 
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
@@ -978,7 +1229,7 @@ void setup() {
     pcf8575.pinMode(P14, OUTPUT);
     pcf8575.pinMode(P15, OUTPUT);
 
-  pinMode(button, INPUT);
+  pinMode(button, INPUT_PULLUP);
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
   pinMode(button3, INPUT);
@@ -986,7 +1237,33 @@ void setup() {
   pinMode(dongco_L, OUTPUT);
   pinMode(dongco_R, OUTPUT);
 
-  attachInterrupt(digitalPinToInterrupt(button), buttonCallback,FALLING);
+  // attachInterrupt(button, buttonCallback,FALLING);
+
+  BLEDevice::init("Therapy Gloves");
+  pServer = BLEDevice::createServer();
+
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  pCharacteristic = pService->createCharacteristic(
+      CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ |
+          BLECharacteristic::PROPERTY_WRITE |
+          BLECharacteristic::PROPERTY_NOTIFY);
+
+  pCharacteristic->setCallbacks(new MyCallbacks());
+
+  pCharacteristic->setValue("Therapy Gloves");
+  pService->start();
+
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setScanResponse(true);
+  pAdvertising->setMinPreferred(0x06); // for iPhone connections issue
+  pAdvertising->setMaxPreferred(0x12);
+  BLEDevice::startAdvertising();
+
+  Serial.println("Start BLE");
 
   tft.init();
   tft.begin();
@@ -996,11 +1273,29 @@ void setup() {
 }
 void loop (){
 
+  // Serial.printf("buttonstate: %d\n",buttonstate);
+  // Serial.printf("currentScreen: %d\n",currentScreen);
+  // Serial.printf("button4state: %d\n",button4state);
+  
   buttonstate = digitalRead(button);//enter
   button3state = digitalRead(button3);//back
   button1state = digitalRead(button1);//left
   button2state = digitalRead(button2);//right
-  button4state = digitalRead(button4);//next
+  // button4state = digitalRead(button4);//next
+  if (onBLE)
+  {
+    onBLE = false;
+  }
+  else
+  {
+    button4state = digitalRead(button4);
+  }
+  
+  
+
+  if(buttonstate == 0){
+    buttonCallback();
+  }
   // enter vao manhinh_main
   if(buttonstate == 0 && button_pressed == false && currentScreen == 1)
   {
