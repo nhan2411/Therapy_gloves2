@@ -8,6 +8,7 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include <BLE2902.h>
 
 #define SERVICE_UUID "e48f8c7f-9b2a-432e-912e-14caa051237a"
 #define CHARACTERISTIC_UUID "45cc01fe-1705-4c3f-bbba-ae5bd83255f7"
@@ -16,8 +17,10 @@ BLEServer *pServer = NULL;
 BLECharacteristic *pCharacteristic = NULL;
 bool deviceConnected = false;
 
-static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs);
+static void checkTypeBLE(int type, int leftHand[5], int rightHand[5], int _min, int _secs);
 void buttonCallback();
+void manhinh_time();
+void manhinh_default(int chooseScreen2_2);
 
 
 class MyServerCallbacks : public BLEServerCallbacks
@@ -90,7 +93,7 @@ class MyCallbacks : public BLECharacteristicCallbacks
       Serial.printf("Mins: %d\n", mins);
       Serial.printf("Secs: %d\n", secs);
 
-      checkTypeBLE(type, leftHand, mins, secs);
+      checkTypeBLE(type, leftHand, rightHand, mins, secs);
     }
   }
 };
@@ -204,7 +207,7 @@ struct Human {
 
 struct Human person;
 
-static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs) {
+static void checkTypeBLE(int type, int leftHand[5], int rightHand[5], int _min, int _secs) {
   // type 
   // 0: Left Hand
   // 1: Righ Hand
@@ -322,23 +325,31 @@ static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs) {
       break;
 
     case 5:
-      if(leftHand[0] == 1)
-        person.left_hand.fingers[0].state = ACTIVE;
-      if(leftHand[1] == 1)
-        person.left_hand.fingers[1].state = ACTIVE;
-      if(leftHand[2] == 1)
-        person.left_hand.fingers[2].state = ACTIVE;
-      if(leftHand[3] == 1)
-        person.left_hand.fingers[3].state = ACTIVE;
-      if(leftHand[4] == 1)
-        person.left_hand.fingers[4].state = ACTIVE;
 
-        // person.right_hand.fingers[0].state = ACTIVE;
-        // person.right_hand.fingers[1].state = ACTIVE;
-        // person.right_hand.fingers[2].state = ACTIVE;
-        // person.right_hand.fingers[3].state = ACTIVE;
-        // person.right_hand.fingers[4].state = ACTIVE;
+        thoigian.timedefault[0].state = OFF;
+        thoigian.timedefault[1].state = OFF;
+        thoigian.timedefault[2].state = OFF;
+        thoigian.timedefault[3].state = OFF;
+        thoigian.timedefault[4].state = OFF;
 
+        person.left_hand.fingers[0].state = INACTIVE;
+        person.left_hand.fingers[1].state = INACTIVE;
+        person.left_hand.fingers[2].state = INACTIVE;
+        person.left_hand.fingers[3].state = INACTIVE;
+        person.left_hand.fingers[4].state = INACTIVE;
+
+        person.right_hand.fingers[0].state = INACTIVE;
+        person.right_hand.fingers[1].state = INACTIVE;
+        person.right_hand.fingers[2].state = INACTIVE;
+        person.right_hand.fingers[3].state = INACTIVE;
+        person.right_hand.fingers[4].state = INACTIVE;
+
+      for (size_t i = 0; i < 5; i++)
+      {
+          person.left_hand.fingers[i].state = leftHand[i] == 1 ? ACTIVE : INACTIVE;
+          person.right_hand.fingers[i].state = rightHand[i] == 1 ? ACTIVE : INACTIVE;
+      }
+    
       onBLE = true;
       button4state = 0;
       currentScreen = 4;
@@ -354,6 +365,7 @@ static void checkTypeBLE(int type, int leftHand[5], int _min, int _secs) {
 
       // currentScreen = 5;
       buttonCallback();
+
       break;
   
   default:
@@ -453,6 +465,13 @@ void buttonCallback(){
 // void IRAM_ATTR buttonCallback(){
   // Serial.println("buttonCallback");
   if(currentScreen == 5){
+    if (deviceConnected)
+    {
+      uint8_t stop = 0;
+      pCharacteristic->setValue(&stop, 1);
+      pCharacteristic->notify();
+    }
+    
     if(millis()-last>=300){
       if (buttonpress == 0){
         buttonpress = 1;
@@ -488,47 +507,74 @@ void buttonCallback(){
           Serial.println("stop dong co tay trai");
         }
         
-        int downArrowX1 = 206;
-        int downArrowY1 = 185;
-        tft.fillCircle(197, 185, 20, TFT_ORANGE);
-        tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
+        // int downArrowX1 = 206;
+        // int downArrowY1 = 185;
+        // tft.fillCircle(197, 185, 20, TFT_ORANGE);
+        // tft.fillTriangle(downArrowX1 , downArrowY1 , downArrowX1 - 15, downArrowY1 - 7, downArrowX1 - 15, downArrowY1 + 7, TFT_WHITE);
       }
-      else {
-        buttonpress = 0;
-        for(int i=0; i<=4; i++){
-          if(person.left_hand.fingers[i].state == ACTIVE){
-            dongco_L_state = !dongco_L_state;
-            digitalWrite(dongco_L, dongco_L_state);
-            Serial.println("chay dong co tay trai");
-            break;
-          }
-        }
-        for(int i=0; i<=4; i++){
-          if(person.right_hand.fingers[i].state == ACTIVE){
-            dongco_R_state = !dongco_R_state;
-            digitalWrite(dongco_R, dongco_R_state);
-            Serial.println("chay dong co tay phai");
-            break;
-          }
-        }
-        if (thoigian.timedefault[4].state == ON)
+      if(flag2 == 2){
+        for(int i=0; i<=3; i++)
         {
-          dongco_R_state = !dongco_R_state;
-          digitalWrite(dongco_R, dongco_R_state);
-          Serial.println("chay dong co tay phai");
+          thoigian.phutgiay2[i].state = OFF;
         }
-
-        if (thoigian.timedefault[3].state == ON)
+        for(int i=0; i<=1; i++)
         {
-          dongco_L_state = !dongco_L_state;
-          digitalWrite(dongco_L, dongco_L_state);
-          Serial.println("chay dong co tay trai");
+          thoigian.phutgiay[i].state = OFF;
+          m = 00;
+          s = 00;
         }
-
-        tft.fillCircle(197, 185, 20, TFT_ORANGE);
-        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
-        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
+        delay(100);
+        manhinh_time();
+        currentScreen--;
       }
+      if(flag3 == 2){
+        for(int i=0; i<=4; i++)
+        {
+          thoigian.timedefault[i].state = OFF;
+        }
+        m = 00;
+        s = 00;
+        chooseScreen2_2 = 1;
+        delay(100);
+        manhinh_default(chooseScreen2_2);
+        currentScreen--;
+      }
+      // else {
+      //   buttonpress = 0;
+      //   for(int i=0; i<=4; i++){
+      //     if(person.left_hand.fingers[i].state == ACTIVE){
+      //       dongco_L_state = !dongco_L_state;
+      //       digitalWrite(dongco_L, dongco_L_state);
+      //       Serial.println("chay dong co tay trai");
+      //       break;
+      //     }
+      //   }
+      //   for(int i=0; i<=4; i++){
+      //     if(person.right_hand.fingers[i].state == ACTIVE){
+      //       dongco_R_state = !dongco_R_state;
+      //       digitalWrite(dongco_R, dongco_R_state);
+      //       Serial.println("chay dong co tay phai");
+      //       break;
+      //     }
+      //   }
+      //   if (thoigian.timedefault[4].state == ON)
+      //   {
+      //     dongco_R_state = !dongco_R_state;
+      //     digitalWrite(dongco_R, dongco_R_state);
+      //     Serial.println("chay dong co tay phai");
+      //   }
+
+      //   if (thoigian.timedefault[3].state == ON)
+      //   {
+      //     dongco_L_state = !dongco_L_state;
+      //     digitalWrite(dongco_L, dongco_L_state);
+      //     Serial.println("chay dong co tay trai");
+      //   }
+
+      //   // tft.fillCircle(197, 185, 20, TFT_ORANGE);
+      //   // tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
+      //   // tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
+      // }
       last = millis();
     }
   }
@@ -1155,8 +1201,9 @@ void manhinh_timing(){
   tft.drawString("(secs)", 205, 107.5); 
 
         tft.fillCircle(197, 185, 20, TFT_ORANGE);
-        tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
-        tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
+        // tft.fillRoundRect(190, 176, 5, 20, 0, TFT_WHITE); 
+        // tft.fillRoundRect(200, 176, 5, 20, 0, TFT_WHITE); 
+        tft.fillRoundRect(190, 176, 15 , 20, 0, TFT_WHITE);
 
   tft.setTextColor(0x053b50);
   tft.setTextSize(4);
@@ -1252,6 +1299,7 @@ void setup() {
           BLECharacteristic::PROPERTY_NOTIFY);
 
   pCharacteristic->setCallbacks(new MyCallbacks());
+  pCharacteristic->addDescriptor(new BLE2902());
 
   pCharacteristic->setValue("Therapy Gloves");
   pService->start();
@@ -1293,8 +1341,11 @@ void loop (){
   
   
 
-  if(buttonstate == 0){
+  if(buttonstate == 0 && button_pressed == false){
     buttonCallback();
+  }
+  if(buttonstate == 1){
+    button_pressed = false;
   }
   // enter vao manhinh_main
   if(buttonstate == 0 && button_pressed == false && currentScreen == 1)
@@ -1878,42 +1929,42 @@ if(button1state == 1){
   } 
 
   // back ve man hinh time tu man hinh dang tap
-  if(button3state == 0 && currentScreen == 5 && flag2 == 2 && button3_pressed == false){
-      for(int i=0; i<=3; i++)
-      {
-        thoigian.phutgiay2[i].state = OFF;
-      }
-      for(int i=0; i<=1; i++)
-      {
-        thoigian.phutgiay[i].state = OFF;
-        m = 00;
-        s = 00;
-      }
-      delay(100);
-      manhinh_time();
-      currentScreen--;
-      button3_pressed = true;
-  }
-  if(button3state == 1){
-    button3_pressed = false;
-  }
+  // if(button3state == 0 && currentScreen == 5 && flag2 == 2 && button3_pressed == false){
+  //     for(int i=0; i<=3; i++)
+  //     {
+  //       thoigian.phutgiay2[i].state = OFF;
+  //     }
+  //     for(int i=0; i<=1; i++)
+  //     {
+  //       thoigian.phutgiay[i].state = OFF;
+  //       m = 00;
+  //       s = 00;
+  //     }
+  //     delay(100);
+  //     manhinh_time();
+  //     currentScreen--;
+  //     button3_pressed = true;
+  // }
+  // if(button3state == 1){
+  //   button3_pressed = false;
+  // }
   // back ve man hinh default tu man hinh dang tap
-  if(button3state == 0 && currentScreen == 5 && flag3 == 2 && button3_pressed == false){
-      for(int i=0; i<=4; i++)
-      {
-        thoigian.timedefault[i].state = OFF;
-      }
-      m = 00;
-      s = 00;
-      chooseScreen2_2 = 1;
-      delay(100);
-      manhinh_default(chooseScreen2_2);
-      currentScreen--;
-      button3_pressed = true;
-  }
-  if(button3state == 1){
-    button3_pressed = false;
-  }
+  // if(button3state == 0 && currentScreen == 5 && flag3 == 2 && button3_pressed == false){
+  //     for(int i=0; i<=4; i++)
+  //     {
+  //       thoigian.timedefault[i].state = OFF;
+  //     }
+  //     m = 00;
+  //     s = 00;
+  //     chooseScreen2_2 = 1;
+  //     delay(100);
+  //     manhinh_default(chooseScreen2_2);
+  //     currentScreen--;
+  //     button3_pressed = true;
+  // }
+  // if(button3state == 1){
+  //   button3_pressed = false;
+  // }
 
   //next
   if(button4state == 0 && currentScreen == 4 && flag1 == 2){
